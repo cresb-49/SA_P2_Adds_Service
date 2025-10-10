@@ -48,6 +48,7 @@ public class UpdateAddCase implements UpdateAddPort {
         );
         //Calculate new url if there is a new file
         String url = null;
+        String oldUrl = add.getUrlContent();
         if (containsFile) {
             url = this.calculateUrl(add, extension, now);
         }
@@ -63,7 +64,7 @@ public class UpdateAddCase implements UpdateAddPort {
         //Delete old file if there is a new file and save new file
         if (containsFile) {
             this.saveFile(add, updateAddDTO.getFile(), extension, now);
-            this.deleteFile(add);
+            this.deleteFile(oldUrl);
         }
         //Save Add
         return saveAddPort.save(add);
@@ -101,9 +102,9 @@ public class UpdateAddCase implements UpdateAddPort {
         }
     }
 
-    private void deleteFile(Add add) {
+    private void deleteFile(String url) {
         try {
-            var urlParts = add.getUrlContent().split("/");
+            var urlParts = url.split("/");
             var keyName = urlParts[urlParts.length - 1];
             deletingFilePort.deleteFile(bucketName, bucketDirectory, keyName);
         } catch (Exception e) {

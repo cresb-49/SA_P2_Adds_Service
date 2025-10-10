@@ -34,7 +34,8 @@ public class DeleteAddCase implements DeleteAddPort {
         var add = findingAddPort.findById(id).orElseThrow(
                 () -> new RuntimeException("Add not found")
         );
-        if (add.getUrlContent() != null && !add.getUrlContent().isBlank()) {
+        deletingAddPort.deleteById(id);
+        if (add.getUrlContent() != null) {
             try {
                 var urlParts = add.getUrlContent().split("/");
                 var keyName = urlParts[urlParts.length - 1];
@@ -44,6 +45,5 @@ public class DeleteAddCase implements DeleteAddPort {
                 throw new RuntimeException("Error deleting file from bucket: " + e.getMessage());
             }
         }
-        deletingAddPort.deleteById(id);
     }
 }
