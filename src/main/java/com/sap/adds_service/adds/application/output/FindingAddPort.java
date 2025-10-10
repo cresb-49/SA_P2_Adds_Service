@@ -22,4 +22,6 @@ public interface FindingAddPort {
     List<Add> findByIds(List<UUID> ids);
 
     Page<Add> findByFilers(AddFilter filter, int page);
+
+    Optional<Add> findAddRandomByTypeAndCinemaId(String type, UUID cinemaId);
 }

@@ -83,6 +83,12 @@ public class AddJpaAdapter implements FindingAddPort, SaveAddPort, DeletingAddPo
     }
 
     @Override
+    public Optional<Add> findAddRandomByTypeAndCinemaId(String type, UUID cinemaId) {
+        var entity = addEntityRepository.findRandomByTypeAndCinemaId(type, cinemaId);
+        return entity.map(addMapper::toDomain);
+    }
+
+    @Override
     public Add save(Add add) {
         var entity = addMapper.toEntity(add);
         var savedEntity = addEntityRepository.save(entity);

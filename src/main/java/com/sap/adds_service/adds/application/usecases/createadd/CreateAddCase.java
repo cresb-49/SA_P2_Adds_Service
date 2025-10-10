@@ -39,24 +39,24 @@ public class CreateAddCase implements CreateAddPort {
             throw new RuntimeException("File must be png, jpg, jpeg, mp4, mov or gif");
         }
         //Create add Domain object
-        Add add = new Add(
-                createAddDTO.getContent(),
-                createAddDTO.getType(),
-                null,
-                createAddDTO.getDescription(),
-                createAddDTO.getCinemaId()
-        );
+        Add add = Add.builder()
+                .content(createAddDTO.getContent())
+                .type(createAddDTO.getType())
+                .description(createAddDTO.getDescription())
+                .cinemaId(createAddDTO.getCinemaId())
+                .build();
+
         //Assign url if there is a file
         if(containsFile) {
             var url = calculateUrl(add, extension, now);
-            add.assignUrlContent(url);
+            add = add.toBuilder().urlContent(url).build();
         }
         //Validate Add
         add.validate();
         //Save File
-//        if(containsFile) {
-//            saveFile(add, createAddDTO.getFile(), extension, now);
-//        }
+        if(containsFile) {
+            saveFile(add, createAddDTO.getFile(), extension, now);
+        }
         //Save Add
         return saveAddPort.save(add);
     }
