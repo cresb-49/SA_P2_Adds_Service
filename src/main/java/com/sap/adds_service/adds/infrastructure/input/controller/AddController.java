@@ -53,22 +53,22 @@ public class AddController {
 
     @GetMapping("/cinema/{cinemaId}/type/{type}/random")
     public ResponseEntity<?> getRandomAdd(
-            @RequestParam UUID cinemaId,
-            @RequestParam String type
+            @PathVariable UUID cinemaId,
+            @PathVariable String type
     ) {
         var add = getRandomAddPort.randomAddByTypeAndCinemaId(type, cinemaId);
         return ResponseEntity.ok(addResponseMapper.toResponse(add));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getAddById(@RequestParam UUID id) {
+    public ResponseEntity<?> getAddById(@PathVariable UUID id) {
         var add = findAddPort.findById(id);
         return ResponseEntity.ok(addResponseMapper.toResponse(add));
     }
 
     @GetMapping("/type/{type}")
     public ResponseEntity<?> getAddsByType(
-            @RequestParam String type,
+            @PathVariable String type,
             @RequestParam(defaultValue = "0") int page
     ) {
         var result = findAddPort.findByType(type, page);
@@ -77,7 +77,7 @@ public class AddController {
 
     @GetMapping("/active/{active}")
     public ResponseEntity<?> getAddsByActive(
-            @RequestParam boolean active,
+            @PathVariable boolean active,
             @RequestParam(defaultValue = "0") int page
     ) {
         var result = findAddPort.findByActive(active, page);
@@ -86,7 +86,7 @@ public class AddController {
 
     @GetMapping("/cinema/{cinemaId}")
     public ResponseEntity<?> getAddsByCinemaId(
-            @RequestParam UUID cinemaId,
+            @PathVariable UUID cinemaId,
             @RequestParam(defaultValue = "0") int page
     ) {
         var result = findAddPort.findByCinemaId(cinemaId, page);
@@ -94,7 +94,7 @@ public class AddController {
     }
 
     @PostMapping("/ids")
-    public ResponseEntity<?> getAddsByIds(@RequestParam List<UUID> ids) {
+    public ResponseEntity<?> getAddsByIds(@RequestBody List<UUID> ids) {
         var adds = findAddPort.findByIds(ids);
         return ResponseEntity.ok(addResponseMapper.toResponseList(adds));
     }
@@ -109,20 +109,20 @@ public class AddController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteAdd(@RequestParam UUID id) {
+    public ResponseEntity<?> deleteAdd(@PathVariable UUID id) {
         deleteAddPort.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/state/{id}")
-    public ResponseEntity<?> changeStateAdd(@RequestParam UUID id) {
+    public ResponseEntity<?> changeStateAdd(@PathVariable UUID id) {
         var add = changeStateAddPort.changeState(id);
         return ResponseEntity.ok(addResponseMapper.toResponse(add));
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateAdd(
-            @RequestParam UUID id,
+            @PathVariable UUID id,
             @ModelAttribute UpdateAddRequestDTO updateAddRequestDTO,
             @RequestPart(value = "file", required = false) MultipartFile file
     ) {

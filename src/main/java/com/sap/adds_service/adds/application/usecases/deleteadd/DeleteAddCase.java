@@ -38,11 +38,11 @@ public class DeleteAddCase implements DeleteAddPort {
             try {
                 var urlParts = add.getUrlContent().split("/");
                 var keyName = urlParts[urlParts.length - 1];
+                System.out.println("Deleting file with key: " + keyName);
                 deletingFilePort.deleteFile(bucketName, bucketDirectory, keyName);
             } catch (Exception e) {
                 throw new RuntimeException("Error deleting file from bucket: " + e.getMessage());
             }
-
         }
         deletingAddPort.deleteById(id);
     }

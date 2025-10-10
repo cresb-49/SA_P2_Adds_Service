@@ -1,5 +1,6 @@
 package com.sap.adds_service.adds.infrastructure.output.jpa.repository;
 
+import com.sap.adds_service.adds.domain.AddType;
 import com.sap.adds_service.adds.infrastructure.output.jpa.entity.AddEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface AddEntityRepository extends JpaRepository<AddEntity, UUID>, JpaSpecificationExecutor<AddEntity> {
-    Page<AddEntity> findByType(String type, Pageable pageable);
+    Page<AddEntity> findByType(AddType type, Pageable pageable);
 
     Page<AddEntity> findByActive(boolean active, Pageable pageable);
 
@@ -23,7 +24,7 @@ public interface AddEntityRepository extends JpaRepository<AddEntity, UUID>, Jpa
 
     @Query(value = """
                 SELECT *
-                FROM add
+                FROM adds
                 WHERE type = :type
                   AND cinema_id = :cinemaId
                   AND active = true

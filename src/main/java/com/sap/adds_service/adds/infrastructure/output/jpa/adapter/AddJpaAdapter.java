@@ -5,6 +5,7 @@ import com.sap.adds_service.adds.application.output.DeletingAddPort;
 import com.sap.adds_service.adds.application.output.FindingAddPort;
 import com.sap.adds_service.adds.application.output.SaveAddPort;
 import com.sap.adds_service.adds.domain.Add;
+import com.sap.adds_service.adds.domain.AddType;
 import com.sap.adds_service.adds.infrastructure.output.jpa.mapper.AddMapper;
 import com.sap.adds_service.adds.infrastructure.output.jpa.repository.AddEntityRepository;
 import com.sap.adds_service.adds.infrastructure.output.jpa.specifications.AddEntitySpecs;
@@ -46,7 +47,7 @@ public class AddJpaAdapter implements FindingAddPort, SaveAddPort, DeletingAddPo
     @Override
     public Page<Add> findByType(String type, int page) {
         var result = addEntityRepository.findByType(
-                type,
+                AddType.valueOf(type),
                 PageRequest.of(page, 20)
         );
         return result.map(addMapper::toDomain);

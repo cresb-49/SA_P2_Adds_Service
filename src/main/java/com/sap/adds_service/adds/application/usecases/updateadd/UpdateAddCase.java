@@ -54,7 +54,7 @@ public class UpdateAddCase implements UpdateAddPort {
         //Update fields
         add.update(
                 updateAddDTO.getContent(),
-                updateAddDTO.isActive(),
+                updateAddDTO.getActive(),
                 updateAddDTO.getDescription(),
                 url
         );

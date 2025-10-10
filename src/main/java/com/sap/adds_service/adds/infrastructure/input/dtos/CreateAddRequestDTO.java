@@ -9,11 +9,10 @@ import java.util.UUID;
 public record CreateAddRequestDTO(
         String content,
         AddType type,
-        boolean active,
         String description,
         UUID cinemaId
 ) {
     public CreateAddDTO toDomain(MultipartFile file)  {
-        return new CreateAddDTO(content, type, active, description, cinemaId, file);
+        return new CreateAddDTO(content, type, description, cinemaId, file);
     }
 }

@@ -12,7 +12,6 @@ import java.util.UUID;
 public class CreateAddDTO {
     private String content;
     private AddType type;
-    private boolean active;
     private String description;
     private UUID cinemaId;
     private MultipartFile file;
