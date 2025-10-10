@@ -61,6 +61,14 @@ public class Add {
     }
 
     /**
+     * Toggle the active status of the Add entity.
+     */
+    public void changeActive() {
+        this.active = !this.active;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
      * Update the Add entity with new values. Only non-null values will be updated.
      * @param content
      * @param active

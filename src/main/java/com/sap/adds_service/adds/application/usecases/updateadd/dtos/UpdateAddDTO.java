@@ -12,7 +12,7 @@ import java.util.UUID;
 public class UpdateAddDTO {
     private UUID id;
     private String content;
-    private boolean active;
+    private Boolean active;
     private String description;
     private MultipartFile file;
 }
