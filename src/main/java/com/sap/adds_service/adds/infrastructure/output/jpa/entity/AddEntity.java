@@ -1,0 +1,47 @@
+package com.sap.adds_service.adds.infrastructure.output.jpa.entity;
+
+import com.sap.adds_service.adds.domain.AddType;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Entity
+@Table(name = "adds")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class AddEntity {
+    @Id
+    private UUID id;
+
+    @Column(nullable = false)
+    private String content;
+
+    @Column(nullable = false, length = 32)
+    @Enumerated(EnumType.STRING)
+    private AddType type;
+
+    @Column(nullable = false)
+    private String urlContent;
+
+    @Column(nullable = false)
+    private boolean active;
+
+    @Column(nullable = false)
+    private String description;
+
+    @Column(nullable = false)
+    private UUID cinemaId;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+}
