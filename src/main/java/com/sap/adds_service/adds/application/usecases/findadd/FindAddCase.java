@@ -4,6 +4,7 @@ import com.sap.adds_service.adds.application.input.FindAddPort;
 import com.sap.adds_service.adds.application.output.FindingAddPort;
 import com.sap.adds_service.adds.application.usecases.findadd.dtos.AddFilter;
 import com.sap.adds_service.adds.domain.Add;
+import com.sap.common_lib.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class FindAddCase implements FindAddPort {
     @Override
     public Add findById(UUID id) {
         return findingAddPort.findById(id).orElseThrow(
-                () -> new RuntimeException("Add not found")
+                () -> new NotFoundException("Add not found")
         );
     }
 

@@ -103,13 +103,13 @@ public class Add {
      */
     public void validate() {
         if (this.description == null || this.description.isEmpty()) {
-            throw new RuntimeException("Description is required");
+            throw new IllegalArgumentException("Description is required");
         }
         if (this.description.length() > DESCRIPTION_MAX_LENGTH) {
-            throw new RuntimeException("Description must be less than 255 characters");
+            throw new IllegalArgumentException("Description must be less than 255 characters");
         }
         if (this.cinemaId == null) {
-            throw new RuntimeException("Cinema ID is required");
+            throw new IllegalArgumentException("Cinema ID is required");
         }
         switch (this.type) {
             case MEDIA_HORIZONTAL, MEDIA_VERTICAL -> {
@@ -127,10 +127,10 @@ public class Add {
      */
     private void validationsMediaType() {
         if (this.content != null && !this.content.isEmpty()) {
-            throw new RuntimeException("Content must be empty for poster types");
+            throw new IllegalArgumentException("Content must be empty for poster types");
         }
         if (this.urlContent == null || this.urlContent.isEmpty()) {
-            throw new RuntimeException("Media is required for poster types");
+            throw new IllegalArgumentException("Media is required for poster types");
         }
     }
 
@@ -139,13 +139,13 @@ public class Add {
      */
     private void validationsTextBanner() {
         if (this.content == null || this.content.isEmpty()) {
-            throw new RuntimeException("Content is required for text banner");
+            throw new IllegalArgumentException("Content is required for text banner");
         }
         if (this.content.length() > CONTENT_MAX_LENGTH) {
-            throw new RuntimeException("Content must be less than 255 characters");
+            throw new IllegalArgumentException("Content must be less than 255 characters");
         }
         if (this.urlContent != null && !this.urlContent.isEmpty()) {
-            throw new RuntimeException("Media is not allowed for text banner");
+            throw new IllegalArgumentException("Media is not allowed for text banner");
         }
     }
 }

@@ -3,6 +3,7 @@ package com.sap.adds_service.adds.application.usecases.getrandomadd;
 import com.sap.adds_service.adds.application.input.GetRandomAddPort;
 import com.sap.adds_service.adds.application.output.FindingAddPort;
 import com.sap.adds_service.adds.domain.Add;
+import com.sap.common_lib.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,7 @@ public class GetRandomAddCase implements GetRandomAddPort {
     @Override
     public Add randomAddByTypeAndCinemaId(String type, UUID cinemaId) {
         return findingAddPort.findAddRandomByTypeAndCinemaId(type, cinemaId).orElseThrow(
-                () -> new RuntimeException("No adds found for the given type and cinemaId")
+                () -> new NotFoundException("No adds found for the given type and cinemaId")
         );
     }
 }

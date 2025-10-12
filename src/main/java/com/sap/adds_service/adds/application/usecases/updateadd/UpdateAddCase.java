@@ -7,6 +7,7 @@ import com.sap.adds_service.adds.application.output.SaveAddPort;
 import com.sap.adds_service.adds.application.output.SaveFilePort;
 import com.sap.adds_service.adds.application.usecases.updateadd.dtos.UpdateAddDTO;
 import com.sap.adds_service.adds.domain.Add;
+import com.sap.common_lib.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -40,11 +41,11 @@ public class UpdateAddCase implements UpdateAddPort {
         var originalFileName = containsFile ? updateAddDTO.getFile().getOriginalFilename() : null;
         var extension = containsFile ? getExtensionNoDotLower(originalFileName) : "";
         if (containsFile && !extension.matches("^(png|jpg|jpeg|mp4|mov|gif)$")) {
-            throw new RuntimeException("File must be png, jpg, jpeg, mp4, mov or gif");
+            throw new IllegalArgumentException("File must be png, jpg, jpeg, mp4, mov or gif");
         }
         //Find existing add
         Add add = findingAddPort.findById(updateAddDTO.getId()).orElseThrow(
-                () -> new RuntimeException("Add not found")
+                () -> new NotFoundException("Add not found")
         );
         //Calculate new url if there is a new file
         String url = null;

@@ -4,6 +4,7 @@ import com.sap.adds_service.adds.application.input.DeleteAddPort;
 import com.sap.adds_service.adds.application.output.DeletingAddPort;
 import com.sap.adds_service.adds.application.output.DeletingFilePort;
 import com.sap.adds_service.adds.application.output.FindingAddPort;
+import com.sap.common_lib.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class DeleteAddCase implements DeleteAddPort {
     @Override
     public void delete(UUID id) {
         var add = findingAddPort.findById(id).orElseThrow(
-                () -> new RuntimeException("Add not found")
+                () -> new NotFoundException("Add not found")
         );
         deletingAddPort.deleteById(id);
         if (add.getUrlContent() != null) {

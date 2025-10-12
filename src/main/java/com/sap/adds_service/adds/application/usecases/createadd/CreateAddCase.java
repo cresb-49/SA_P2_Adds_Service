@@ -5,6 +5,7 @@ import com.sap.adds_service.adds.application.output.SaveAddPort;
 import com.sap.adds_service.adds.application.output.SaveFilePort;
 import com.sap.adds_service.adds.application.usecases.createadd.dtos.CreateAddDTO;
 import com.sap.adds_service.adds.domain.Add;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class CreateAddCase implements CreateAddPort {
         var originalFileName = containsFile ? createAddDTO.getFile().getOriginalFilename() : null;
         var extension = containsFile ? getExtensionNoDotLower(originalFileName) : "";
         if(containsFile && !extension.matches("^(png|jpg|jpeg|mp4|mov|gif)$")) {
-            throw new RuntimeException("File must be png, jpg, jpeg, mp4, mov or gif");
+            throw new IllegalArgumentException("File must be png, jpg, jpeg, mp4, mov or gif");
         }
         //Create add Domain object
         Add add = Add.builder()

@@ -4,6 +4,7 @@ import com.sap.adds_service.adds.application.input.ChangeStateAddPort;
 import com.sap.adds_service.adds.application.output.FindingAddPort;
 import com.sap.adds_service.adds.application.output.SaveAddPort;
 import com.sap.adds_service.adds.domain.Add;
+import com.sap.common_lib.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,7 @@ public class ChangeStateAddCase implements ChangeStateAddPort {
     @Override
     public Add changeState(UUID id) {
         Add add = findingAddPort.findById(id).orElseThrow(
-                () -> new RuntimeException("Add not found")
+                () -> new NotFoundException("Add not found")
         );
         // Toggle the active state
         add.changeActive();
