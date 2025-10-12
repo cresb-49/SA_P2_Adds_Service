@@ -1,7 +1,7 @@
 package com.sap.adds_service.adds.infrastructure.input.mappers;
 
 import com.sap.adds_service.adds.domain.Add;
-import com.sap.adds_service.adds.infrastructure.input.dtos.AddResponseDTO;
+import com.sap.common_lib.dto.response.add.AddResponseDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
