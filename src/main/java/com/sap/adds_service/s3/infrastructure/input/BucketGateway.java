@@ -1,7 +1,7 @@
-package com.sap.adds_service.config.infrastructure.input;
+package com.sap.adds_service.s3.infrastructure.input;
 
-import com.sap.adds_service.config.infrastructure.input.port.BucketGatewayPort;
-import com.sap.adds_service.config.infrastructure.output.adapter.S3ServicePort;
+import com.sap.adds_service.s3.infrastructure.input.port.BucketGatewayPort;
+import com.sap.adds_service.s3.infrastructure.output.adapter.S3ServicePort;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
