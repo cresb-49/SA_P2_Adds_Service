@@ -19,6 +19,8 @@ public interface FindingAddPort {
 
     Page<Add> findByCinemaId(UUID cinemaId, int page);
 
+    Page<Add> findByUserId(UUID userId, int page);
+
     List<Add> findByIds(List<UUID> ids);
 
     Page<Add> findByFilers(AddFilter filter, int page);

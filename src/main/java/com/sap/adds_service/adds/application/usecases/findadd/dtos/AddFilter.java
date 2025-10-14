@@ -7,6 +7,7 @@ import java.util.UUID;
 public record AddFilter(
         AddType type,
         Boolean active,
-        UUID cinemaId
+        UUID cinemaId,
+        UUID userId
 ) {
 }

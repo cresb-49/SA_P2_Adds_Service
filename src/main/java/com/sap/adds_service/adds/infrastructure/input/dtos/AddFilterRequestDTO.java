@@ -8,9 +8,10 @@ import java.util.UUID;
 public record AddFilterRequestDTO(
         AddType type,
         Boolean active,
-        UUID cinemaId
+        UUID cinemaId,
+        UUID userId
 ) {
     public AddFilter toDomain() {
-        return new AddFilter(type, active, cinemaId);
+        return new AddFilter(type, active, cinemaId, userId);
     }
 }

@@ -36,7 +36,7 @@ public class DeleteAddCase implements DeleteAddPort {
                 () -> new NotFoundException("Add not found")
         );
         deletingAddPort.deleteById(id);
-        if (add.getUrlContent() != null) {
+        if (add.getUrlContent() != null && !add.isExternalMedia()) {
             try {
                 var urlParts = add.getUrlContent().split("/");
                 var keyName = urlParts[urlParts.length - 1];

@@ -1,0 +1,2 @@
+ALTER TABLE adds
+    ALTER COLUMN url_content DROP NOT NULL;

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -18,7 +19,7 @@ public class GetRandomAddCase implements GetRandomAddPort {
     private final FindingAddPort findingAddPort;
 
     @Override
-    public Add randomAddByTypeAndCinemaId(String type, UUID cinemaId) {
+    public Add randomAddByTypeAndCinemaId(String type, UUID cinemaId, LocalDateTime currentDateTime) {
         return findingAddPort.findAddRandomByTypeAndCinemaId(type, cinemaId).orElseThrow(
                 () -> new NotFoundException("No adds found for the given type and cinemaId")
         );

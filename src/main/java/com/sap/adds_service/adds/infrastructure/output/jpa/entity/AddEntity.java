@@ -27,6 +27,12 @@ public class AddEntity {
     @Enumerated(EnumType.STRING)
     private AddType type;
 
+    @Column(nullable = true)
+    private String contentType;
+
+    @Column(nullable = false)
+    private boolean externalMedia;
+
     @Column(nullable = false)
     private String urlContent;
 
@@ -38,6 +44,12 @@ public class AddEntity {
 
     @Column(nullable = false)
     private UUID cinemaId;
+
+    @Column(nullable = false)
+    private UUID userId;
+
+    @Column(nullable = false)
+    private LocalDateTime addExpiration;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

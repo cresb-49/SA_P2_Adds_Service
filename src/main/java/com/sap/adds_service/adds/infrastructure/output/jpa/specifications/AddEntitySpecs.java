@@ -11,7 +11,8 @@ public class AddEntitySpecs {
         return Specification.allOf(
                 eqType(f.type()),
                 eqActive(f.active()),
-                eqCinema(f.cinemaId())
+                eqCinema(f.cinemaId()),
+                eqUser(f.userId())
         );
     }
 
@@ -25,5 +26,9 @@ public class AddEntitySpecs {
 
     private static Specification<AddEntity> eqCinema(UUID cinemaId) {
         return (root, q, cb) -> cinemaId == null ? null : cb.equal(root.get("cinemaId"), cinemaId);
+    }
+
+    private static Specification<AddEntity> eqUser(UUID userId) {
+        return (root, q, cb) -> userId == null ? null : cb.equal(root.get("userId"), userId);
     }
 }

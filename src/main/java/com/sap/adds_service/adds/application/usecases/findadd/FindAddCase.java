@@ -53,6 +53,11 @@ public class FindAddCase implements FindAddPort {
     }
 
     @Override
+    public Page<Add> findByUserId(UUID userId, int page) {
+        return findingAddPort.findByUserId(userId, page);
+    }
+
+    @Override
     public List<Add> findByIds(List<UUID> ids) {
         return findingAddPort.findByIds(ids);
     }

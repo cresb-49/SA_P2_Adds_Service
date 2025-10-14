@@ -22,6 +22,8 @@ public interface AddEntityRepository extends JpaRepository<AddEntity, UUID>, Jpa
 
     Page<AddEntity> findByCinemaId(UUID cinemaId, Pageable pageable);
 
+    Page<AddEntity> findByUserId(UUID userId, Pageable pageable);
+
     @Query(value = """
                 SELECT *
                 FROM adds

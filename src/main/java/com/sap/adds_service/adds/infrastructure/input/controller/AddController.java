@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,15 +33,16 @@ public class AddController {
     // Mapper
     private final AddResponseMapper addResponseMapper;
 
-    @GetMapping
+    @GetMapping("/search")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN') or hasRole('SPONSOR')")
     public ResponseEntity<?> getAllAddsByFilters(
             @RequestParam(required = false) AddType type,
             @RequestParam(required = false) Boolean active,
             @RequestParam(required = false) UUID cinemaId,
+            @RequestParam(required = false) UUID userId,
             @RequestParam(defaultValue = "0") int page
     ) {
-        var filter = new AddFilterRequestDTO(type, active, cinemaId);
+        var filter = new AddFilterRequestDTO(type, active, cinemaId, userId);
         var result = findAddPort.findByFilters(filter.toDomain(), page);
         return ResponseEntity.ok(addResponseMapper.toResponsePage(result));
     }
@@ -58,9 +60,11 @@ public class AddController {
     @GetMapping("/cinema/{cinemaId}/type/{type}/random")
     public ResponseEntity<?> getRandomAdd(
             @PathVariable UUID cinemaId,
-            @PathVariable String type
+            @PathVariable String type,
+            @RequestParam(required = false) String currentDateTime
     ) {
-        var add = getRandomAddPort.randomAddByTypeAndCinemaId(type, cinemaId);
+        var currentDateTimeParsed = currentDateTime != null ? LocalDateTime.parse(currentDateTime) : LocalDateTime.now();
+        var add = getRandomAddPort.randomAddByTypeAndCinemaId(type, cinemaId, currentDateTimeParsed);
         return ResponseEntity.ok(addResponseMapper.toResponse(add));
     }
 
@@ -98,6 +102,16 @@ public class AddController {
             @RequestParam(defaultValue = "0") int page
     ) {
         var result = findAddPort.findByCinemaId(cinemaId, page);
+        return ResponseEntity.ok(addResponseMapper.toResponsePage(result));
+    }
+
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN') or hasRole('SPONSOR')")
+    public ResponseEntity<?> getAddsByUserId(
+            @PathVariable UUID userId,
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        var result = findAddPort.findByUserId(userId, page);
         return ResponseEntity.ok(addResponseMapper.toResponsePage(result));
     }
 

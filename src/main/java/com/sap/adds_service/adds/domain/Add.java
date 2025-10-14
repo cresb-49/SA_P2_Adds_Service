@@ -1,6 +1,5 @@
 package com.sap.adds_service.adds.domain;
 
-import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -15,49 +14,50 @@ public class Add {
     private final UUID id;
     private String content;
     private final AddType type;
+    private String contentType;
+    private boolean externalMedia;
     private String urlContent;
     private boolean active;
     private String description;
     private final UUID cinemaId;
+    private final UUID userId;
+    private final LocalDateTime addExpiration;
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    /**
-     * All args constructor Add entity
-     * @param id
-     * @param content
-     * @param type
-     * @param urlContent
-     * @param active
-     * @param description
-     * @param cinemaId
-     * @param createdAt
-     * @param updatedAt
-     */
-    @Builder(toBuilder = true)
-    public Add(UUID id, String content, AddType type, String urlContent, Boolean active,
-                String description, UUID cinemaId, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id != null ? id : UUID.randomUUID();
+    public Add(String content, AddType type, String contentType, boolean externalMedia,
+               String urlContent, String description, UUID cinemaId, UUID userId, int durationDays
+    ) {
+        this.id = UUID.randomUUID();
         this.content = content;
         this.type = type;
+        this.contentType = contentType;
+        this.externalMedia = externalMedia;
         this.urlContent = urlContent;
-        this.active = active != null ? active : true;
+        this.active = true;
         this.description = description;
         this.cinemaId = cinemaId;
-        this.createdAt = createdAt != null ? createdAt : LocalDateTime.now();
-        this.updatedAt = updatedAt != null ? updatedAt : LocalDateTime.now();
+        this.userId = userId;
+        this.createdAt = LocalDateTime.now();
+        this.addExpiration = durationDays > 0 ? this.createdAt.plusDays(durationDays) : null;
+        this.updatedAt = LocalDateTime.now();
     }
 
-    /**
-     * Create a new Add with default values for id, active, createdAt, and updatedAt.
-     * @param content
-     * @param type
-     * @param urlContent
-     * @param description
-     * @param cinemaId
-     */
-    public Add(String content, AddType type, String urlContent, String description, UUID cinemaId) {
-        this(null, content, type, urlContent, true, description, cinemaId, null, null);
+    public Add(UUID id, String content, AddType type, String contentType, boolean externalMedia, String urlContent, boolean active,
+               String description, UUID cinemaId, UUID userId, LocalDateTime addExpiration, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.content = content;
+        this.type = type;
+        this.contentType = contentType;
+        this.externalMedia = externalMedia;
+        this.urlContent = urlContent;
+        this.active = active;
+        this.description = description;
+        this.cinemaId = cinemaId;
+        this.userId = userId;
+        this.createdAt = createdAt;
+        this.addExpiration = addExpiration;
+        this.updatedAt = updatedAt;
     }
 
     /**
@@ -70,12 +70,13 @@ public class Add {
 
     /**
      * Update the Add entity with new values. Only non-null values will be updated.
+     *
      * @param content
      * @param active
      * @param description
      * @param urlContent
      */
-    public void update(String content, Boolean active, String description, String urlContent) {
+    public void update(String content, Boolean active, String description, String contentType, boolean externalMedia, String urlContent) {
         var updateFlag = false;
         if (content != null) {
             this.content = content;
@@ -87,6 +88,14 @@ public class Add {
         }
         if (description != null) {
             this.description = description;
+            updateFlag = true;
+        }
+        if (contentType != null) {
+            this.contentType = contentType;
+            updateFlag = true;
+        }
+        if (externalMedia != this.externalMedia) {
+            this.externalMedia = externalMedia;
             updateFlag = true;
         }
         if (urlContent != null) {
@@ -111,6 +120,9 @@ public class Add {
         if (this.cinemaId == null) {
             throw new IllegalArgumentException("Cinema ID is required");
         }
+        if (this.type == null) {
+            throw new IllegalArgumentException("Add type is required");
+        }
         switch (this.type) {
             case MEDIA_HORIZONTAL, MEDIA_VERTICAL -> {
                 this.validationsMediaType();
@@ -120,6 +132,10 @@ public class Add {
             }
             default -> throw new IllegalStateException("Unknown add type: " + this.type);
         }
+        if (this.userId == null) {
+            throw new IllegalArgumentException("User ID is required");
+        }
+
     }
 
     /**
@@ -127,10 +143,13 @@ public class Add {
      */
     private void validationsMediaType() {
         if (this.content != null && !this.content.isEmpty()) {
-            throw new IllegalArgumentException("Content must be empty for poster types");
+            throw new IllegalArgumentException("Content must be empty for media types");
         }
         if (this.urlContent == null || this.urlContent.isEmpty()) {
-            throw new IllegalArgumentException("Media is required for poster types");
+            throw new IllegalArgumentException("Media is required for media types");
+        }
+        if (this.contentType == null || this.contentType.isEmpty()) {
+            throw new IllegalArgumentException("Content type is required for media types");
         }
     }
 

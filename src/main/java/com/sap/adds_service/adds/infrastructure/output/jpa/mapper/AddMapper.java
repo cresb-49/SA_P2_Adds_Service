@@ -17,10 +17,14 @@ public class AddMapper {
                 entity.getId(),
                 entity.getContent(),
                 entity.getType(),
+                entity.getContentType(),
+                entity.isExternalMedia(),
                 entity.getUrlContent(),
                 entity.isActive(),
                 entity.getDescription(),
                 entity.getCinemaId(),
+                entity.getUserId(),
+                entity.getAddExpiration(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );
@@ -34,10 +38,14 @@ public class AddMapper {
                 add.getId(),
                 add.getContent(),
                 add.getType(),
+                add.getContentType(),
+                add.isExternalMedia(),
                 add.getUrlContent(),
                 add.isActive(),
                 add.getDescription(),
                 add.getCinemaId(),
+                add.getUserId(),
+                add.getAddExpiration(),
                 add.getCreatedAt(),
                 add.getUpdatedAt()
         );

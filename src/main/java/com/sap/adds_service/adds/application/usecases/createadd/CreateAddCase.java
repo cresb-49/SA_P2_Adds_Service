@@ -5,7 +5,9 @@ import com.sap.adds_service.adds.application.output.SaveAddPort;
 import com.sap.adds_service.adds.application.output.SaveFilePort;
 import com.sap.adds_service.adds.application.usecases.createadd.dtos.CreateAddDTO;
 import com.sap.adds_service.adds.domain.Add;
-import jakarta.validation.ConstraintViolationException;
+import com.sap.common_lib.util.ContentTypeUtils;
+import com.sap.common_lib.util.DetectMineTypeResourceUtil;
+import com.sap.common_lib.util.FileExtensionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,62 +35,66 @@ public class CreateAddCase implements CreateAddPort {
     public Add create(CreateAddDTO createAddDTO) {
         //Get a current timestamp
         var now = String.valueOf(System.currentTimeMillis());
-        var containsFile = createAddDTO.getFile() != null && !createAddDTO.getFile().isEmpty();
-        var originalFileName = containsFile ? createAddDTO.getFile().getOriginalFilename() : null;
-        var extension = containsFile ? getExtensionNoDotLower(originalFileName) : "";
-        if(containsFile && !extension.matches("^(png|jpg|jpeg|mp4|mov|gif)$")) {
+        var useExternalUrl = createAddDTO.urlContent() != null && !createAddDTO.urlContent().isBlank();
+        var containsFile = createAddDTO.file() != null && !createAddDTO.file().isEmpty();
+        if (useExternalUrl && containsFile) {
+            throw new IllegalArgumentException("Cannot provide both a file and an external URL");
+        }
+        var originalFileName = containsFile ? createAddDTO.file().getOriginalFilename() : null;
+        var extension = containsFile ? FileExtensionUtils.getExtensionNoDotLower(originalFileName) : "";
+        if (containsFile && !extension.matches("^(png|jpg|jpeg|mp4|mov|gif)$")) {
             throw new IllegalArgumentException("File must be png, jpg, jpeg, mp4, mov or gif");
         }
+        var isYouTubeUrl = useExternalUrl && isYouTubeUrl(createAddDTO.urlContent());
+        var contentTypeExternal = isYouTubeUrl ? "youtube" : useExternalUrl ? DetectMineTypeResourceUtil.detectMimeTypeFromUrl(createAddDTO.urlContent()) : null;
+        var localContentType = containsFile ? ContentTypeUtils.detectMimeFromName(originalFileName).orElseThrow(
+                () -> new IllegalArgumentException("Could not determine file type")
+        ) : null;
+        var contentType = isYouTubeUrl ? "youtube" : useExternalUrl ? contentTypeExternal : localContentType;
+        //Calculate URL
+        var url = useExternalUrl ? createAddDTO.urlContent() : (containsFile ? calculateUrl(extension, now) : null);
         //Create add Domain object
-        Add add = Add.builder()
-                .content(createAddDTO.getContent())
-                .type(createAddDTO.getType())
-                .description(createAddDTO.getDescription())
-                .cinemaId(createAddDTO.getCinemaId())
-                .build();
-
-        //Assign url if there is a file
-        if(containsFile) {
-            var url = calculateUrl(add, extension, now);
-            add = add.toBuilder().urlContent(url).build();
-        }
+        Add add = new Add(
+                createAddDTO.content(),
+                createAddDTO.type(),
+                contentType,
+                useExternalUrl,
+                url,
+                createAddDTO.description(),
+                createAddDTO.cinemaId(),
+                createAddDTO.userId(),
+                1
+        );
         //Validate Add
         add.validate();
         //Save File
-        if(containsFile) {
-            saveFile(add, createAddDTO.getFile(), extension, now);
+        if (containsFile) {
+            saveFile(createAddDTO.file(), extension, now);
         }
         //Save Add
         return saveAddPort.save(add);
     }
 
-    private String getExtensionWithDot(String name) {
-        if (name == null) return "";
-        String trimmed = name.trim();
-        int lastDot = trimmed.lastIndexOf('.');
-        // No punto o el punto es el primer char (dotfile) -> sin extensión "convencional"
-        if (lastDot <= 0 || lastDot == trimmed.length() - 1) return "";
-        return trimmed.substring(lastDot); // incluye el punto
+    public boolean isYouTubeUrl(String url) {
+        return url != null && (
+                url.contains("youtube.com/watch") ||
+                        url.contains("youtu.be/")
+        );
     }
 
-    private String getExtensionNoDotLower(String name) {
-        String withDot = getExtensionWithDot(name);
-        return withDot.isEmpty() ? "" : withDot.substring(1).toLowerCase(); // sin punto y en minúsculas
-    }
-
-    private String calculateUrl(Add add, String extension, String now) {
-        var fileName = String.format("add_%s_%s.%s", add.getId(), now, extension);
+    private String calculateUrl(String extension, String now) {
+        var fileName = String.format("add_%s.%s", now, extension);
         return String.format("https://%s.s3.%s.amazonaws.com/%s/%s", bucketName, awsRegion, bucketDirectory, fileName);
     }
 
-    private void saveFile(Add add, MultipartFile file, String extension, String now){
+    private void saveFile(MultipartFile file, String extension, String now) {
         try {
-         saveFilePort.uploadFile(
-                 bucketName,
-                 bucketDirectory,
-                 String.format("add_%s_%s.%s", add.getId(), now, extension),
-                 file.getBytes()
-         );
+            saveFilePort.uploadFile(
+                    bucketName,
+                    bucketDirectory,
+                    String.format("add_%s.%s", now, extension),
+                    file.getBytes()
+            );
         } catch (Exception e) {
             throw new RuntimeException("Error saving file", e);
         }

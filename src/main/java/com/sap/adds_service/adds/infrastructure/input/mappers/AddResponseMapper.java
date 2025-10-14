@@ -18,10 +18,14 @@ public class AddResponseMapper {
                 add.getId(),
                 add.getContent(),
                 add.getType().toString(),
+                add.getContentType(),
+                add.isExternalMedia(),
                 add.getUrlContent(),
                 add.isActive(),
                 add.getDescription(),
                 add.getCinemaId(),
+                add.getUserId(),
+                add.getAddExpiration(),
                 add.getCreatedAt(),
                 add.getUpdatedAt()
         );

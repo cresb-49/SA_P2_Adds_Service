@@ -10,9 +10,12 @@ public record CreateAddRequestDTO(
         String content,
         AddType type,
         String description,
-        UUID cinemaId
+        UUID cinemaId,
+        String urlContent,
+        UUID userId,
+        UUID durationDaysId
 ) {
-    public CreateAddDTO toDomain(MultipartFile file)  {
-        return new CreateAddDTO(content, type, description, cinemaId, file);
+    public CreateAddDTO toDomain(MultipartFile file) {
+        return new CreateAddDTO(content, type, description, cinemaId, urlContent, userId, durationDaysId, file);
     }
 }

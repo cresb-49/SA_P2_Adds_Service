@@ -63,6 +63,15 @@ public class AddJpaAdapter implements FindingAddPort, SaveAddPort, DeletingAddPo
     }
 
     @Override
+    public Page<Add> findByUserId(UUID userId, int page) {
+        var result = addEntityRepository.findByUserId(
+                userId,
+                PageRequest.of(page, 20)
+        );
+        return result.map(addMapper::toDomain);
+    }
+
+    @Override
     public Page<Add> findByActive(boolean active, int page) {
         var result = addEntityRepository.findByActive(
                 active,
