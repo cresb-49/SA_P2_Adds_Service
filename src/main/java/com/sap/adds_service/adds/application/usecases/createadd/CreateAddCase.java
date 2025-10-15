@@ -1,10 +1,13 @@
 package com.sap.adds_service.adds.application.usecases.createadd;
 
 import com.sap.adds_service.adds.application.input.CreateAddPort;
+import com.sap.adds_service.adds.application.output.FindDurationPort;
+import com.sap.adds_service.adds.application.output.FindingPricePort;
 import com.sap.adds_service.adds.application.output.SaveAddPort;
 import com.sap.adds_service.adds.application.output.SaveFilePort;
 import com.sap.adds_service.adds.application.usecases.createadd.dtos.CreateAddDTO;
 import com.sap.adds_service.adds.domain.Add;
+import com.sap.common_lib.exception.NotFoundException;
 import com.sap.common_lib.util.ContentTypeUtils;
 import com.sap.common_lib.util.DetectMineTypeResourceUtil;
 import com.sap.common_lib.util.FileExtensionUtils;
@@ -30,9 +33,19 @@ public class CreateAddCase implements CreateAddPort {
 
     private final SaveAddPort saveAddPort;
     private final SaveFilePort saveFilePort;
+    private final FindingPricePort findingPricePort;
+    private final FindDurationPort findDurationPort;
 
     @Override
     public Add create(CreateAddDTO createAddDTO) {
+        //Check if cinema has prices set
+        var price = findingPricePort.findByCinemaId(createAddDTO.cinemaId()).orElseThrow(
+                () -> new NotFoundException("Cinema must have prices set before creating an add")
+        );
+        // Check if duration is valid
+        var duration = findDurationPort.findById(createAddDTO.durationDaysId()).orElseThrow(
+                () -> new NotFoundException("Duration not found")
+        );
         //Get a current timestamp
         var now = String.valueOf(System.currentTimeMillis());
         var useExternalUrl = createAddDTO.urlContent() != null && !createAddDTO.urlContent().isBlank();
@@ -63,7 +76,7 @@ public class CreateAddCase implements CreateAddPort {
                 createAddDTO.description(),
                 createAddDTO.cinemaId(),
                 createAddDTO.userId(),
-                1
+                duration.days()
         );
         //Validate Add
         add.validate();
