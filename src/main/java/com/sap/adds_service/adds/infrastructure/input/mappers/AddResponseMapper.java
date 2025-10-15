@@ -25,6 +25,9 @@ public class AddResponseMapper {
                 add.getDescription(),
                 add.getCinemaId(),
                 add.getUserId(),
+                add.getPaymentState().toString(),
+                add.getPaidAt(),
+                add.getPrice(),
                 add.getAddExpiration(),
                 add.getCreatedAt(),
                 add.getUpdatedAt()
