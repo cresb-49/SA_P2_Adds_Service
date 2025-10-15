@@ -7,12 +7,11 @@ import java.util.UUID;
 
 public record UpdateAddRequestDTO(
         String content,
-        Boolean active,
         String description,
         String urlContent
 ) {
 
     public UpdateAddDTO toDomain(UUID id, MultipartFile file) {
-        return new UpdateAddDTO(id, content, active, description, urlContent, file);
+        return new UpdateAddDTO(id, content, description, urlContent, file);
     }
 }

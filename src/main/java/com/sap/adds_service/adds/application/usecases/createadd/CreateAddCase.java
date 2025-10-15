@@ -7,6 +7,8 @@ import com.sap.adds_service.adds.application.output.SaveAddPort;
 import com.sap.adds_service.adds.application.output.SaveFilePort;
 import com.sap.adds_service.adds.application.usecases.createadd.dtos.CreateAddDTO;
 import com.sap.adds_service.adds.domain.Add;
+import com.sap.adds_service.adds.domain.AddType;
+import com.sap.adds_service.adds.domain.PriceView;
 import com.sap.common_lib.exception.NotFoundException;
 import com.sap.common_lib.util.ContentTypeUtils;
 import com.sap.common_lib.util.DetectMineTypeResourceUtil;
@@ -16,6 +18,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -76,7 +80,8 @@ public class CreateAddCase implements CreateAddPort {
                 createAddDTO.description(),
                 createAddDTO.cinemaId(),
                 createAddDTO.userId(),
-                duration.days()
+                duration.days(),
+                this.getPriceByType(createAddDTO.type(), price)
         );
         //Validate Add
         add.validate();
@@ -86,6 +91,13 @@ public class CreateAddCase implements CreateAddPort {
         }
         //Save Add
         return saveAddPort.save(add);
+    }
+    private BigDecimal getPriceByType(AddType addType, PriceView price) {
+        return switch (addType) {
+            case MEDIA_HORIZONTAL -> price.amountMediaHorizontal();
+            case MEDIA_VERTICAL -> price.amountMediaVertical();
+            case TEXT_BANNER -> price.amountTextBanner();
+        };
     }
 
     public boolean isYouTubeUrl(String url) {

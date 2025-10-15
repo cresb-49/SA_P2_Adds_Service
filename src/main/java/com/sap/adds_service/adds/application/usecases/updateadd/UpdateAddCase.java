@@ -68,7 +68,6 @@ public class UpdateAddCase implements UpdateAddPort {
         //Update fields
         add.update(
                 updateAddDTO.content(),
-                updateAddDTO.active(),
                 updateAddDTO.description(),
                 contentType,
                 useExternalUrl,

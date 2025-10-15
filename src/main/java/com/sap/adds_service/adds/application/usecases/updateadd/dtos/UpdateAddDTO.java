@@ -8,7 +8,6 @@ import java.util.UUID;
 public record UpdateAddDTO(
         UUID id,
         String content,
-        Boolean active,
         String description,
         String urlContent,
         MultipartFile file

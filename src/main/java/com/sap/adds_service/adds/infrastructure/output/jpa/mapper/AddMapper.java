@@ -24,6 +24,9 @@ public class AddMapper {
                 entity.getDescription(),
                 entity.getCinemaId(),
                 entity.getUserId(),
+                entity.getPaymentState(),
+                entity.getPaidAt(),
+                entity.getPrice(),
                 entity.getAddExpiration(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
@@ -45,6 +48,9 @@ public class AddMapper {
                 add.getDescription(),
                 add.getCinemaId(),
                 add.getUserId(),
+                add.getPaymentState(),
+                add.getPaidAt(),
+                add.getPrice(),
                 add.getAddExpiration(),
                 add.getCreatedAt(),
                 add.getUpdatedAt()

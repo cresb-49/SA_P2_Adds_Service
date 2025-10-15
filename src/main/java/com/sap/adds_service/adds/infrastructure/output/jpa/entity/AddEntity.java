@@ -1,12 +1,14 @@
 package com.sap.adds_service.adds.infrastructure.output.jpa.entity;
 
 import com.sap.adds_service.adds.domain.AddType;
+import com.sap.adds_service.adds.domain.PaymentState;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -47,6 +49,16 @@ public class AddEntity {
 
     @Column(nullable = false)
     private UUID userId;
+
+    @Column(nullable = false, length = 32)
+    @Enumerated(EnumType.STRING)
+    private PaymentState paymentState;
+
+    @Column(nullable = true)
+    private LocalDateTime paidAt;
+
+    @Column(nullable = false)
+    private BigDecimal price;
 
     @Column(nullable = false)
     private LocalDateTime addExpiration;

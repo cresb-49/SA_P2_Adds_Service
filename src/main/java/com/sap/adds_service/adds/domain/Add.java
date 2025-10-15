@@ -1,10 +1,13 @@
 package com.sap.adds_service.adds.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@AllArgsConstructor
 @Getter
 public class Add {
 
@@ -21,12 +24,15 @@ public class Add {
     private String description;
     private final UUID cinemaId;
     private final UUID userId;
+    private PaymentState paymentState;
+    private LocalDateTime paidAt;
+    private final BigDecimal price;
     private final LocalDateTime addExpiration;
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public Add(String content, AddType type, String contentType, boolean externalMedia,
-               String urlContent, String description, UUID cinemaId, UUID userId, int durationDays
+               String urlContent, String description, UUID cinemaId, UUID userId, int durationDays, BigDecimal price
     ) {
         this.id = UUID.randomUUID();
         this.content = content;
@@ -34,37 +40,69 @@ public class Add {
         this.contentType = contentType;
         this.externalMedia = externalMedia;
         this.urlContent = urlContent;
-        this.active = true;
+        this.active = false;
         this.description = description;
         this.cinemaId = cinemaId;
         this.userId = userId;
+        this.paymentState = PaymentState.PENDING;
+        this.paidAt = null;
+        this.price = price;
         this.createdAt = LocalDateTime.now();
         this.addExpiration = durationDays > 0 ? this.createdAt.plusDays(durationDays) : null;
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public Add(UUID id, String content, AddType type, String contentType, boolean externalMedia, String urlContent, boolean active,
-               String description, UUID cinemaId, UUID userId, LocalDateTime addExpiration, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.content = content;
-        this.type = type;
-        this.contentType = contentType;
-        this.externalMedia = externalMedia;
-        this.urlContent = urlContent;
-        this.active = active;
-        this.description = description;
-        this.cinemaId = cinemaId;
-        this.userId = userId;
-        this.createdAt = createdAt;
-        this.addExpiration = addExpiration;
-        this.updatedAt = updatedAt;
     }
 
     /**
      * Toggle the active status of the Add entity.
      */
     public void changeActive() {
+        if (this.paymentState != PaymentState.COMPLETED) {
+            throw new IllegalStateException("Cannot change active status of an unpaid add");
+        }
         this.active = !this.active;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * Mark the Add entity as paid, setting its payment state to COMPLETED and activating it.
+     */
+    public void markAsPaid() {
+        if (this.paymentState == PaymentState.COMPLETED) {
+            throw new IllegalStateException("Add is already marked as paid");
+        }
+        if(this.paymentState == PaymentState.FAILED){
+            throw new IllegalStateException("Cannot mark a failed payment as paid");
+        }
+        this.paymentState = PaymentState.COMPLETED;
+        this.active = true;
+        this.paidAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * Mark the Add entity as failed, setting its payment state to FAILED and deactivating it.
+     */
+    public void markAsFailed() {
+        if (this.paymentState == PaymentState.COMPLETED) {
+            throw new IllegalStateException("Cannot mark a completed payment as failed");
+        }
+        if(this.paymentState == PaymentState.FAILED){
+            throw new IllegalStateException("Add is already marked as failed");
+        }
+        this.paymentState = PaymentState.FAILED;
+        this.active = false;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * Retry the payment for the Add entity, setting its payment state back to PENDING and deactivating it.
+     */
+    public void retryPayment() {
+        if (this.paymentState != PaymentState.FAILED) {
+            throw new IllegalStateException("Can only retry payment for a failed add");
+        }
+        this.paymentState = PaymentState.PENDING;
+        this.active = false;
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -72,18 +110,13 @@ public class Add {
      * Update the Add entity with new values. Only non-null values will be updated.
      *
      * @param content
-     * @param active
      * @param description
      * @param urlContent
      */
-    public void update(String content, Boolean active, String description, String contentType, boolean externalMedia, String urlContent) {
+    public void update(String content, String description, String contentType, boolean externalMedia, String urlContent) {
         var updateFlag = false;
         if (content != null) {
             this.content = content;
-            updateFlag = true;
-        }
-        if (active != null) {
-            this.active = active;
             updateFlag = true;
         }
         if (description != null) {
@@ -135,7 +168,6 @@ public class Add {
         if (this.userId == null) {
             throw new IllegalArgumentException("User ID is required");
         }
-
     }
 
     /**
