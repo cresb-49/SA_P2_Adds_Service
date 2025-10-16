@@ -59,7 +59,7 @@ public class AddController {
     }
 
     //Public endpoint to get random add by type and cinema id
-    @GetMapping("/cinema/{cinemaId}/type/{type}/random")
+    @GetMapping("/public/cinema/{cinemaId}/type/{type}/random")
     public ResponseEntity<?> getRandomAdd(
             @PathVariable UUID cinemaId,
             @PathVariable AddType type,
