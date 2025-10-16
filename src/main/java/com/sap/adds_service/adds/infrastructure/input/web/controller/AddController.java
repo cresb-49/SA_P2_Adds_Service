@@ -2,6 +2,7 @@ package com.sap.adds_service.adds.infrastructure.input.web.controller;
 
 import com.sap.adds_service.adds.application.input.*;
 import com.sap.adds_service.adds.domain.AddType;
+import com.sap.adds_service.adds.domain.PaymentState;
 import com.sap.adds_service.adds.infrastructure.input.web.dtos.AddFilterRequestDTO;
 import com.sap.adds_service.adds.infrastructure.input.web.dtos.CreateAddRequestDTO;
 import com.sap.adds_service.adds.infrastructure.input.web.dtos.UpdateAddRequestDTO;
@@ -37,12 +38,13 @@ public class AddController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN') or hasRole('SPONSOR')")
     public ResponseEntity<?> getAllAddsByFilters(
             @RequestParam(required = false) AddType type,
+            @RequestParam(required = false) PaymentState paymentState,
             @RequestParam(required = false) Boolean active,
             @RequestParam(required = false) UUID cinemaId,
             @RequestParam(required = false) UUID userId,
             @RequestParam(defaultValue = "0") int page
     ) {
-        var filter = new AddFilterRequestDTO(type, active, cinemaId, userId);
+        var filter = new AddFilterRequestDTO(type, paymentState, active, cinemaId, userId);
         var result = findAddPort.findByFilters(filter.toDomain(), page);
         return ResponseEntity.ok(addResponseMapper.toResponsePage(result));
     }
@@ -60,7 +62,7 @@ public class AddController {
     @GetMapping("/cinema/{cinemaId}/type/{type}/random")
     public ResponseEntity<?> getRandomAdd(
             @PathVariable UUID cinemaId,
-            @PathVariable String type,
+            @PathVariable AddType type,
             @RequestParam(required = false) String currentDateTime
     ) {
         var currentDateTimeParsed = currentDateTime != null ? LocalDateTime.parse(currentDateTime) : LocalDateTime.now();

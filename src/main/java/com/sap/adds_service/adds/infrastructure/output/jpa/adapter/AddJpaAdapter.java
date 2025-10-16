@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -93,8 +94,14 @@ public class AddJpaAdapter implements FindingAddPort, SaveAddPort, DeletingAddPo
     }
 
     @Override
-    public Optional<Add> findAddRandomByTypeAndCinemaId(String type, UUID cinemaId) {
-        var entity = addEntityRepository.findRandomByTypeAndCinemaId(type, cinemaId);
+    public Optional<Add> findAddRandomByTypeAndCinemaId(String type, UUID cinemaId, String paymentState) {
+        var entity = addEntityRepository.findRandomByTypeCinemaAndPaymentState(type, cinemaId, paymentState);
+        return entity.map(addMapper::toDomain);
+    }
+
+    @Override
+    public Optional<Add> findAddRandomByTypeAndCinemaIdAndNow(String type, UUID cinemaId, String paymentState, LocalDateTime now) {
+        var entity = addEntityRepository.findRandomValidByTypeCinemaPaymentStateAndNow(type, cinemaId, paymentState, now);
         return entity.map(addMapper::toDomain);
     }
 

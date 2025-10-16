@@ -4,6 +4,7 @@ import com.sap.adds_service.adds.application.usecases.findadd.dtos.AddFilter;
 import com.sap.adds_service.adds.domain.Add;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,5 +26,7 @@ public interface FindingAddPort {
 
     Page<Add> findByFilers(AddFilter filter, int page);
 
-    Optional<Add> findAddRandomByTypeAndCinemaId(String type, UUID cinemaId);
+    Optional<Add> findAddRandomByTypeAndCinemaId(String type, UUID cinemaId, String paymentState);
+
+    Optional<Add> findAddRandomByTypeAndCinemaIdAndNow(String type, UUID cinemaId, String paymentState, LocalDateTime now);
 }

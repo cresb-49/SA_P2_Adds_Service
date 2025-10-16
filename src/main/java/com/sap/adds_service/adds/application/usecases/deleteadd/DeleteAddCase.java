@@ -4,6 +4,7 @@ import com.sap.adds_service.adds.application.input.DeleteAddPort;
 import com.sap.adds_service.adds.application.output.DeletingAddPort;
 import com.sap.adds_service.adds.application.output.DeletingFilePort;
 import com.sap.adds_service.adds.application.output.FindingAddPort;
+import com.sap.adds_service.adds.domain.PaymentState;
 import com.sap.common_lib.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +36,10 @@ public class DeleteAddCase implements DeleteAddPort {
         var add = findingAddPort.findById(id).orElseThrow(
                 () -> new NotFoundException("Add not found")
         );
+        //Verify if te add is not pending or completed payments
+        if(add.getPaymentState() == PaymentState.COMPLETED || add.getPaymentState() == PaymentState.PENDING){
+            throw new IllegalStateException("Cannot delete an add with pending or completed payments");
+        }
         deletingAddPort.deleteById(id);
         if (add.getUrlContent() != null && !add.isExternalMedia()) {
             try {
