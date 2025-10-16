@@ -40,6 +40,8 @@ public class CreateAddCase implements CreateAddPort {
     private final FindingPricePort findingPricePort;
     private final FindDurationPort findDurationPort;
 
+    //private final KafkaTemplate<String, SendPaymentEventDTO> kafka; // Ejemplo
+
     @Override
     public Add create(CreateAddDTO createAddDTO) {
         //Check if cinema has prices set

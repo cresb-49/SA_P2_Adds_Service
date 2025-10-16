@@ -1,11 +1,11 @@
-package com.sap.adds_service.adds.infrastructure.input.controller;
+package com.sap.adds_service.adds.infrastructure.input.web.controller;
 
 import com.sap.adds_service.adds.application.input.*;
 import com.sap.adds_service.adds.domain.AddType;
-import com.sap.adds_service.adds.infrastructure.input.dtos.AddFilterRequestDTO;
-import com.sap.adds_service.adds.infrastructure.input.dtos.CreateAddRequestDTO;
-import com.sap.adds_service.adds.infrastructure.input.dtos.UpdateAddRequestDTO;
-import com.sap.adds_service.adds.infrastructure.input.mappers.AddResponseMapper;
+import com.sap.adds_service.adds.infrastructure.input.web.dtos.AddFilterRequestDTO;
+import com.sap.adds_service.adds.infrastructure.input.web.dtos.CreateAddRequestDTO;
+import com.sap.adds_service.adds.infrastructure.input.web.dtos.UpdateAddRequestDTO;
+import com.sap.adds_service.adds.infrastructure.input.web.mappers.AddResponseMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

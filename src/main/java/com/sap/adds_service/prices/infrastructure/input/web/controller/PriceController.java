@@ -8,6 +8,7 @@ import com.sap.adds_service.prices.infrastructure.input.web.dtos.UpdatePriceRequ
 import com.sap.adds_service.prices.infrastructure.input.web.mapper.PriceResponseMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -25,6 +26,7 @@ public class PriceController {
     private final PriceResponseMapper priceResponseMapper;
 
     @PostMapping("/cinema/{cinemaId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createPrices(
             @PathVariable UUID cinemaId
     ) {
@@ -33,6 +35,7 @@ public class PriceController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deletePrices(
             @PathVariable UUID id
     ) {
@@ -41,6 +44,7 @@ public class PriceController {
     }
 
     @DeleteMapping("/cinema/{cinemaId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deletePricesByCinemaId(
             @PathVariable UUID cinemaId
     ) {
@@ -49,6 +53,7 @@ public class PriceController {
     }
 
     @GetMapping("/cinema/{cinemaId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN') or hasRole('SPONSOR')")
     public ResponseEntity<?> findPricesByCinemaId(
             @PathVariable UUID cinemaId
     ) {
@@ -56,7 +61,19 @@ public class PriceController {
         return ResponseEntity.ok(priceResponseMapper.toResponseDTO(price));
     }
 
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> findAllPrices(
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        var prices = findPriceCasePort.findAll(page);
+        var response = priceResponseMapper.toResponseDTOPage(prices);
+        return ResponseEntity.ok(response);
+    }
+
+
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN') or hasRole('SPONSOR')")
     public ResponseEntity<?> findPricesById(
             @PathVariable UUID id
     ) {
@@ -65,6 +82,7 @@ public class PriceController {
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updatePrices(
             @PathVariable UUID id,
             @RequestBody UpdatePriceRequestDTO request

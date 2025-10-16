@@ -57,7 +57,7 @@ public class Add {
      */
     public void changeActive() {
         if (this.paymentState != PaymentState.COMPLETED) {
-            throw new IllegalStateException("Cannot change active status of an unpaid add");
+            throw new IllegalStateException("Cannot change active status of an unpaid add Add ID: " + this.id);
         }
         this.active = !this.active;
         this.updatedAt = LocalDateTime.now();
@@ -68,10 +68,10 @@ public class Add {
      */
     public void markAsPaid() {
         if (this.paymentState == PaymentState.COMPLETED) {
-            throw new IllegalStateException("Add is already marked as paid");
+            throw new IllegalStateException("Add ID:"+ this.id + " is already marked as paid");
         }
         if(this.paymentState == PaymentState.FAILED){
-            throw new IllegalStateException("Cannot mark a failed payment as paid");
+            throw new IllegalStateException("Cannot mark a failed payment as paid directly. Please retry payment first. Add ID: " + this.id);
         }
         this.paymentState = PaymentState.COMPLETED;
         this.active = true;
@@ -84,10 +84,10 @@ public class Add {
      */
     public void markAsFailed() {
         if (this.paymentState == PaymentState.COMPLETED) {
-            throw new IllegalStateException("Cannot mark a completed payment as failed");
+            throw new IllegalStateException("Cannot mark a completed payment as failed Add ID: " + this.id);
         }
         if(this.paymentState == PaymentState.FAILED){
-            throw new IllegalStateException("Add is already marked as failed");
+            throw new IllegalStateException("Add is already marked as failed Add ID: " + this.id);
         }
         this.paymentState = PaymentState.FAILED;
         this.active = false;
@@ -99,7 +99,7 @@ public class Add {
      */
     public void retryPayment() {
         if (this.paymentState != PaymentState.FAILED) {
-            throw new IllegalStateException("Can only retry payment for a failed add");
+            throw new IllegalStateException("Can only retry payment for a failed add Add ID: " + this.id);
         }
         this.paymentState = PaymentState.PENDING;
         this.active = false;

@@ -1,4 +1,4 @@
-package com.sap.adds_service.adds.infrastructure.input.dtos;
+package com.sap.adds_service.adds.infrastructure.input.web.dtos;
 
 import com.sap.adds_service.adds.application.usecases.createadd.dtos.CreateAddDTO;
 import com.sap.adds_service.adds.domain.AddType;

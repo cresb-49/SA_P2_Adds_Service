@@ -1,4 +1,4 @@
-package com.sap.adds_service.adds.infrastructure.input.dtos;
+package com.sap.adds_service.adds.infrastructure.input.web.dtos;
 
 import com.sap.adds_service.adds.application.usecases.updateadd.dtos.UpdateAddDTO;
 import org.springframework.web.multipart.MultipartFile;

@@ -3,6 +3,7 @@ package com.sap.adds_service.prices.application.output;
 import com.sap.adds_service.prices.domain.Price;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 

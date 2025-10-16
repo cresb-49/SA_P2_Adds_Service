@@ -1,4 +1,4 @@
-package com.sap.adds_service.adds.infrastructure.input.mappers;
+package com.sap.adds_service.adds.infrastructure.input.web.mappers;
 
 import com.sap.adds_service.adds.domain.Add;
 import com.sap.common_lib.dto.response.add.AddResponseDTO;
