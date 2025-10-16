@@ -1,14 +1,13 @@
 package com.sap.adds_service.adds.application.usecases.createadd;
 
 import com.sap.adds_service.adds.application.input.CreateAddPort;
-import com.sap.adds_service.adds.application.output.FindDurationPort;
-import com.sap.adds_service.adds.application.output.FindingPricePort;
-import com.sap.adds_service.adds.application.output.SaveAddPort;
-import com.sap.adds_service.adds.application.output.SaveFilePort;
+import com.sap.adds_service.adds.application.output.*;
 import com.sap.adds_service.adds.application.usecases.createadd.dtos.CreateAddDTO;
 import com.sap.adds_service.adds.domain.Add;
 import com.sap.adds_service.adds.domain.AddType;
 import com.sap.adds_service.adds.domain.PriceView;
+import com.sap.adds_service.adds.domain.dto.NotificacionDTO;
+import com.sap.adds_service.adds.domain.dto.PaidAddDTO;
 import com.sap.common_lib.exception.NotFoundException;
 import com.sap.common_lib.util.ContentTypeUtils;
 import com.sap.common_lib.util.DetectMineTypeResourceUtil;
@@ -39,6 +38,8 @@ public class CreateAddCase implements CreateAddPort {
     private final SaveFilePort saveFilePort;
     private final FindingPricePort findingPricePort;
     private final FindDurationPort findDurationPort;
+    private final SendPaymentAddPort sendPaymentAddPort;
+    private final SendNotificationPort sendNotificationPort;
 
     //private final KafkaTemplate<String, SendPaymentEventDTO> kafka; // Ejemplo
 
@@ -91,9 +92,14 @@ public class CreateAddCase implements CreateAddPort {
         if (containsFile) {
             saveFile(createAddDTO.file(), extension, now);
         }
+        // Send Payment Event
+        sendPaymentAddPort.sendPaymentEvent(new PaidAddDTO());
+        // Send Notification Event
+        sendNotificationPort.sendNotification(new NotificacionDTO());
         //Save Add
         return saveAddPort.save(add);
     }
+
     private BigDecimal getPriceByType(AddType addType, PriceView price) {
         return switch (addType) {
             case MEDIA_HORIZONTAL -> price.amountMediaHorizontal();
