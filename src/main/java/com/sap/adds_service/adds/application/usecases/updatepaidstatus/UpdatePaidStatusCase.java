@@ -20,6 +20,7 @@ public class UpdatePaidStatusCase implements UpdatePaidStatusCasePort {
 
     @Override
     public void updatePaidStatusEvent(ChangePaidStateAddDTO changePaidStateAddDTO) {
+        System.out.println("Processing updatePaidStatusEvent for Add ID: " + changePaidStateAddDTO.addId() + " with paid status: " + changePaidStateAddDTO.paid());
         Add add = findingAddPort.findById(changePaidStateAddDTO.addId()).orElseThrow(
                 () -> new NonRetryableBusinessException("Add with ID: " + changePaidStateAddDTO.addId() + " not found")
         );
@@ -35,6 +36,7 @@ public class UpdatePaidStatusCase implements UpdatePaidStatusCasePort {
             saveAddPort.save(add);
         } catch (IllegalStateException e) {
             // Send notification to user about failure
+            System.out.println(e.getMessage());
         }
         // If ocurre other exception the transaction will be rollback and retry
     }

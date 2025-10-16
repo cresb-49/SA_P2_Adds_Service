@@ -7,4 +7,12 @@ public record ChangePaidStateAddDTO(
         boolean paid, // new paid state of the add
         String message // additional message why the state was changed
 ) {
+    @Override
+    public String toString() {
+        return "ChangePaidStateAddDTO{" +
+                "addId=" + addId +
+                ", paid=" + paid +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }

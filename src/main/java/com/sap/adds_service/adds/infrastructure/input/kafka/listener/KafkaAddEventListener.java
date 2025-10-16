@@ -23,6 +23,7 @@ public class KafkaAddEventListener {
                 changePaidStateAddEventDTO.paid(),
                 changePaidStateAddEventDTO.message()
         );
+        System.out.println("Received Kafka message: " + appDto.toString());
         updatePaidStatusCasePort.updatePaidStatusEvent(appDto);
     }
 }

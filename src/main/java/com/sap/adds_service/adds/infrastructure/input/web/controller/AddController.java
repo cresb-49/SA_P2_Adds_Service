@@ -7,9 +7,12 @@ import com.sap.adds_service.adds.infrastructure.input.web.dtos.AddFilterRequestD
 import com.sap.adds_service.adds.infrastructure.input.web.dtos.CreateAddRequestDTO;
 import com.sap.adds_service.adds.infrastructure.input.web.dtos.UpdateAddRequestDTO;
 import com.sap.adds_service.adds.infrastructure.input.web.mappers.AddResponseMapper;
+import com.sap.common_lib.dto.response.add.events.ChangePaidStateAddEventDTO;
+import com.sap.common_lib.events.topics.TopicConstants;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +26,8 @@ import java.util.UUID;
 @RequestMapping("/api/v1/adds")
 @AllArgsConstructor
 public class AddController {
+
+    private final KafkaTemplate<String, ChangePaidStateAddEventDTO> kafka;
 
     // Use case interfaces
     private final ChangeStateAddPort changeStateAddPort;
@@ -157,6 +162,18 @@ public class AddController {
     ) {
         var add = updateAddPort.update(updateAddRequestDTO.toDomain(id, file));
         return ResponseEntity.ok(addResponseMapper.toResponse(add));
+    }
+
+    @GetMapping("/public/test/kafka")
+    public ResponseEntity<?> testKafka() {
+
+        var event = new ChangePaidStateAddEventDTO(
+                UUID.fromString("4638bb22-eb97-404a-bfb3-a6a8359307b8"),
+                true,
+                "Pago realizado con exito"
+        );
+        kafka.send(TopicConstants.UPDATE_PAID_STATUS_ADD_TOPIC, event.addId().toString(), event);
+        return ResponseEntity.noContent().build();
     }
 
 }
