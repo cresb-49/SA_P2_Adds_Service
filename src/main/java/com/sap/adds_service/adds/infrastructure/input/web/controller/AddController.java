@@ -36,6 +36,7 @@ public class AddController {
     private final FindAddPort findAddPort;
     private final GetRandomAddPort getRandomAddPort;
     private final UpdateAddPort updateAddPort;
+    private final RetryPaidAddCasePort retryPaidAddCasePort;
     // Mapper
     private final AddResponseMapper addResponseMapper;
 
@@ -133,7 +134,7 @@ public class AddController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN') or hasRole('SPONSOR')")
     public ResponseEntity<?> createAdd(
             @ModelAttribute CreateAddRequestDTO requestDTO,
-            @RequestPart("file") MultipartFile file
+            @RequestPart(value = "file", required = false) MultipartFile file
     ) {
         var add = createAddPort.create(requestDTO.toDomain(file));
         return ResponseEntity.ok(addResponseMapper.toResponse(add));
@@ -162,6 +163,12 @@ public class AddController {
     ) {
         var add = updateAddPort.update(updateAddRequestDTO.toDomain(id, file));
         return ResponseEntity.ok(addResponseMapper.toResponse(add));
+    }
+
+    @PostMapping("/retry-paid/{addId}")
+    public ResponseEntity<?> retryPaidAdd(@PathVariable UUID addId) {
+        retryPaidAddCasePort.retryPaidAdd(addId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/public/test/kafka")
