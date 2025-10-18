@@ -84,7 +84,7 @@ public class CreateAddCase implements CreateAddPort {
                 createAddDTO.cinemaId(),
                 createAddDTO.userId(),
                 duration.days(),
-                this.getPriceByType(createAddDTO.type(), price)
+                this.getPriceByType(createAddDTO.type(), price).multiply(BigDecimal.valueOf(duration.days()))
         );
         //Validate Add
         add.validate();

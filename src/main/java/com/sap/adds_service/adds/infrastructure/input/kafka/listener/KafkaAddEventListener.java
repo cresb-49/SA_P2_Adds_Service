@@ -16,7 +16,10 @@ public class KafkaAddEventListener {
 
     private final UpdatePaidStatusCasePort updatePaidStatusCasePort;
 
-    @KafkaListener(topics = TopicConstants.UPDATE_PAID_STATUS_ADD_TOPIC, groupId = GroupsConstants.ADDS_SERVICE_GROUP_ID)
+    @KafkaListener(
+            topics = TopicConstants.UPDATE_PAID_STATUS_ADD_TOPIC,
+            groupId = GroupsConstants.ADDS_SERVICE_GROUP_ID
+    )
     public void onUpdatePaidStatusEvent(@Payload ChangePaidStateAddEventDTO changePaidStateAddEventDTO) {
         var appDto = new ChangePaidStateAddDTO(
                 changePaidStateAddEventDTO.addId(),
