@@ -39,6 +39,7 @@ public class CreateAddCase implements CreateAddPort {
     private final SendNotificationPort sendNotificationPort;
     private final FindCinemaPort findCinemaPort;
     private final SendNotificationAddPayment sendNotificationAddPayment;
+    private final FindUserPort findUserPort;
 
     //private final KafkaTemplate<String, SendPaymentEventDTO> kafka; // Ejemplo
 
@@ -47,6 +48,10 @@ public class CreateAddCase implements CreateAddPort {
         // Check if cinema exists
         if (!findCinemaPort.checkIfCinemaExistsById(createAddDTO.cinemaId())) {
             throw new NotFoundException("El cine no existe");
+        }
+        // Check if user exists
+        if (!findUserPort.existsById(createAddDTO.userId())) {
+            throw new NotFoundException("El usuario no existe");
         }
         //Check if cinema has prices set
         var price = findingPricePort.findByCinemaId(createAddDTO.cinemaId()).orElseThrow(

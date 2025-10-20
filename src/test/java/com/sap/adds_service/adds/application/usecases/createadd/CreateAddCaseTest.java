@@ -41,6 +41,8 @@ class CreateAddCaseTest {
     private SendNotificationPort sendNotificationPort;
     @Mock
     private FindCinemaPort findCinemaPort;
+    @Mock
+    private FindUserPort findUserPort;
 
     @Mock
     private SendNotificationAddPayment sendNotificationAddPayment;
@@ -81,6 +83,7 @@ class CreateAddCaseTest {
                         LocalDateTime.now(), LocalDateTime.now())));
         DurationView durationView = mock(DurationView.class);
         when(findDurationPort.findById(DURATION_ID)).thenReturn(Optional.of(durationView));
+        when(findUserPort.existsById(USER_ID)).thenReturn(true);
     }
 
     @Test
@@ -102,6 +105,8 @@ class CreateAddCaseTest {
         // Arrange
         CreateAddDTO dto = mock(CreateAddDTO.class);
         when(dto.cinemaId()).thenReturn(CINEMA_ID);
+        when(dto.userId()).thenReturn(USER_ID);
+        when(findUserPort.existsById(USER_ID)).thenReturn(true);
         when(findCinemaPort.checkIfCinemaExistsById(CINEMA_ID)).thenReturn(true);
         when(findingPricePort.findByCinemaId(CINEMA_ID)).thenReturn(Optional.empty());
         // Act & Assert
@@ -118,6 +123,8 @@ class CreateAddCaseTest {
         CreateAddDTO dto = mock(CreateAddDTO.class);
         when(dto.cinemaId()).thenReturn(CINEMA_ID);
         when(dto.durationDaysId()).thenReturn(DURATION_ID);
+        when(dto.userId()).thenReturn(USER_ID);
+        when(findUserPort.existsById(USER_ID)).thenReturn(true);
         when(findCinemaPort.checkIfCinemaExistsById(CINEMA_ID)).thenReturn(true);
         when(findingPricePort.findByCinemaId(CINEMA_ID)).thenReturn(Optional
                 .of(new PriceView(ADD_ID, CINEMA_ID, TXT_PRICE, VERT_PRICE, HORZ_PRICE, LocalDateTime.now(), LocalDateTime.now())));
@@ -138,7 +145,9 @@ class CreateAddCaseTest {
         when(dto.durationDaysId()).thenReturn(DURATION_ID);
         when(dto.urlContent()).thenReturn("https://youtu.be/abc");
         when(dto.file()).thenReturn(file);
+        when(dto.userId()).thenReturn(USER_ID);
         stubHappyInfra();
+        when(findUserPort.existsById(USER_ID)).thenReturn(true);
         // Act & Assert
         assertThatThrownBy(() -> useCase.create(dto)).isInstanceOf(IllegalArgumentException.class);
         verifyNoInteractions(saveFilePort, saveAddPort);
@@ -156,7 +165,9 @@ class CreateAddCaseTest {
         when(dto.durationDaysId()).thenReturn(DURATION_ID);
         when(dto.file()).thenReturn(file);
         when(dto.urlContent()).thenReturn(null);
+        when(dto.userId()).thenReturn(USER_ID);
         stubHappyInfra();
+        when(findUserPort.existsById(USER_ID)).thenReturn(true);
         // Act & Assert
         assertThatThrownBy(() -> useCase.create(dto)).isInstanceOf(IllegalArgumentException.class);
         verifyNoInteractions(saveFilePort, saveAddPort);
@@ -168,6 +179,7 @@ class CreateAddCaseTest {
         // Arrange
         CreateAddDTO dto = mockDto(null, AddType.MEDIA_HORIZONTAL, "desc", "https://youtu.be/abc123", null);
         stubHappyInfra();
+        when(findUserPort.existsById(USER_ID)).thenReturn(true);
         when(saveAddPort.save(any(Add.class))).thenAnswer(inv -> inv.getArgument(0));
         // Act
         Add result = useCase.create(dto);
@@ -184,6 +196,7 @@ class CreateAddCaseTest {
         // Arrange
         CreateAddDTO dto = mockDto("Promo hoy", AddType.TEXT_BANNER, "desc", null, null);
         stubHappyInfra();
+        when(findUserPort.existsById(USER_ID)).thenReturn(true);
         when(saveAddPort.save(any(Add.class))).thenAnswer(inv -> inv.getArgument(0));
         // Act
         Add result = useCase.create(dto);
@@ -204,6 +217,7 @@ class CreateAddCaseTest {
         when(file.getBytes()).thenReturn(new byte[]{1, 2, 3});
         CreateAddDTO dto = mockDto(null, AddType.MEDIA_VERTICAL, "desc", null, file);
         stubHappyInfra();
+        when(findUserPort.existsById(USER_ID)).thenReturn(true);
         when(saveAddPort.save(any(Add.class))).thenAnswer(inv -> inv.getArgument(0));
         // Act
         Add result = useCase.create(dto);
