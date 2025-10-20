@@ -1,6 +1,7 @@
 package com.sap.adds_service.prices.application.usecases.createprices;
 
 import com.sap.adds_service.prices.application.input.CreatePriceCasePort;
+import com.sap.adds_service.prices.application.output.FindCinemaPort;
 import com.sap.adds_service.prices.application.output.FindPricePort;
 import com.sap.adds_service.prices.application.output.SavePricePort;
 import com.sap.adds_service.prices.domain.Price;
@@ -20,9 +21,14 @@ public class CreatePriceCase implements CreatePriceCasePort {
 
     private final FindPricePort findPricePort;
     private final SavePricePort savePricePort;
+    private final FindCinemaPort findCinemaPort;
 
     @Override
     public Price createPrices(UUID cinemaId) {
+        // Check if cinema exists
+        if (!findCinemaPort.checkIfCinemaExistsById(cinemaId)) {
+            throw new IllegalArgumentException("El cine no existe");
+        }
         // Check if prices already exist for the cinema
         if (findPricePort.checkIfCinemaExistsById(cinemaId)) {
             throw new IllegalArgumentException("Ya existen precios para este cine");

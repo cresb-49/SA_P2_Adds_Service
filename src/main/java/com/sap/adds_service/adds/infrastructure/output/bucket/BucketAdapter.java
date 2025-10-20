@@ -1,4 +1,4 @@
-package com.sap.adds_service.adds.infrastructure.output.adapter;
+package com.sap.adds_service.adds.infrastructure.output.bucket;
 
 import com.sap.adds_service.adds.application.output.DeletingFilePort;
 import com.sap.adds_service.adds.application.output.SaveFilePort;

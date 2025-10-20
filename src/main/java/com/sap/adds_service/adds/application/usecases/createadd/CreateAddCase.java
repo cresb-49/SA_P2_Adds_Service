@@ -40,11 +40,16 @@ public class CreateAddCase implements CreateAddPort {
     private final FindDurationPort findDurationPort;
     private final SendPaymentAddPort sendPaymentAddPort;
     private final SendNotificationPort sendNotificationPort;
+    private final FindCinemaPort findCinemaPort;
 
     //private final KafkaTemplate<String, SendPaymentEventDTO> kafka; // Ejemplo
 
     @Override
     public Add create(CreateAddDTO createAddDTO) {
+        // Check if cinema exists
+        if (!findCinemaPort.checkIfCinemaExistsById(createAddDTO.cinemaId())) {
+            throw new NotFoundException("El cine no existe");
+        }
         //Check if cinema has prices set
         var price = findingPricePort.findByCinemaId(createAddDTO.cinemaId()).orElseThrow(
                 () -> new NotFoundException("Los precios no están configurados para el cine")
