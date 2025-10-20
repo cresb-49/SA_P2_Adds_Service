@@ -1,7 +1,7 @@
 package com.sap.adds_service.adds.application.output;
 
-import com.sap.adds_service.adds.domain.dto.NotificacionDTO;
+import java.util.UUID;
 
 public interface SendNotificationPort {
-    void sendNotification(NotificacionDTO notificacionDTO);
+    void sendNotification(UUID userId, String message);
 }

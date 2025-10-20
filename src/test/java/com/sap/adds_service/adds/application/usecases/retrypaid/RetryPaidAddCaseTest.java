@@ -1,11 +1,9 @@
-
-
 package com.sap.adds_service.adds.application.usecases.retrypaid;
 
 import com.sap.adds_service.adds.application.output.FindingAddPort;
 import com.sap.adds_service.adds.application.output.SaveAddPort;
 import com.sap.adds_service.adds.application.output.SendNotificationPort;
-import com.sap.adds_service.adds.application.output.SendPaymentAddPort;
+import com.sap.adds_service.adds.application.output.SendNotificationAddPayment;
 import com.sap.adds_service.adds.domain.Add;
 import com.sap.adds_service.adds.domain.PaymentState;
 import com.sap.common_lib.exception.NotFoundException;
@@ -20,8 +18,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RetryPaidAddCaseTest {
@@ -33,10 +31,10 @@ class RetryPaidAddCaseTest {
     private SaveAddPort saveAddPort;
 
     @Mock
-    private SendPaymentAddPort sendPaymentAddPort;
+    private SendNotificationPort sendNotificationPort;
 
     @Mock
-    private SendNotificationPort sendNotificationPort;
+    private SendNotificationAddPayment sendNotificationAddPayment;
 
     @InjectMocks
     private RetryPaidAddCase retryPaidAddCase;
@@ -67,15 +65,16 @@ class RetryPaidAddCaseTest {
                 LocalDateTime.now()
         );
         when(findingAddPort.findById(ADD_ID)).thenReturn(Optional.of(add));
+        when(saveAddPort.save(any(Add.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // Act
         retryPaidAddCase.retryPaidAdd(ADD_ID);
 
         // Assert
         verify(findingAddPort, times(1)).findById(ADD_ID);
-        verify(sendPaymentAddPort, times(1)).sendPaymentEvent(any());
-        verify(sendNotificationPort, times(1)).sendNotification(any());
+        verify(sendNotificationPort, times(1)).sendNotification(any(), any());
         verify(saveAddPort, times(1)).save(add);
+        verify(sendNotificationAddPayment, times(1)).sendPaymentEvent(any(), any(), any());
         org.assertj.core.api.Assertions.assertThat(add.getPaymentState()).isEqualTo(PaymentState.PENDING);
         org.assertj.core.api.Assertions.assertThat(add.isActive()).isFalse();
     }
@@ -88,7 +87,7 @@ class RetryPaidAddCaseTest {
         // Act & Assert
         assertThatThrownBy(() -> retryPaidAddCase.retryPaidAdd(ADD_ID))
                 .isInstanceOf(NotFoundException.class);
-        verifyNoInteractions(sendPaymentAddPort, sendNotificationPort, saveAddPort);
+        verifyNoInteractions(sendNotificationPort, saveAddPort);
     }
 
     @Test
@@ -117,6 +116,6 @@ class RetryPaidAddCaseTest {
         // Act & Assert
         assertThatThrownBy(() -> retryPaidAddCase.retryPaidAdd(ADD_ID))
                 .isInstanceOf(IllegalStateException.class);
-        verifyNoInteractions(sendPaymentAddPort, sendNotificationPort, saveAddPort);
+        verifyNoInteractions(sendNotificationPort, saveAddPort);
     }
 }

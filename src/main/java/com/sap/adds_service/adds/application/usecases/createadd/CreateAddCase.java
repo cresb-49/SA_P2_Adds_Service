@@ -6,8 +6,6 @@ import com.sap.adds_service.adds.application.usecases.createadd.dtos.CreateAddDT
 import com.sap.adds_service.adds.domain.Add;
 import com.sap.adds_service.adds.domain.AddType;
 import com.sap.adds_service.adds.domain.PriceView;
-import com.sap.adds_service.adds.domain.dto.NotificacionDTO;
-import com.sap.adds_service.adds.domain.dto.PaidAddDTO;
 import com.sap.common_lib.exception.NotFoundException;
 import com.sap.common_lib.util.ContentTypeUtils;
 import com.sap.common_lib.util.DetectMineTypeResourceUtil;
@@ -38,9 +36,9 @@ public class CreateAddCase implements CreateAddPort {
     private final SaveFilePort saveFilePort;
     private final FindingPricePort findingPricePort;
     private final FindDurationPort findDurationPort;
-    private final SendPaymentAddPort sendPaymentAddPort;
     private final SendNotificationPort sendNotificationPort;
     private final FindCinemaPort findCinemaPort;
+    private final SendNotificationAddPayment sendNotificationAddPayment;
 
     //private final KafkaTemplate<String, SendPaymentEventDTO> kafka; // Ejemplo
 
@@ -97,12 +95,13 @@ public class CreateAddCase implements CreateAddPort {
         if (containsFile) {
             saveFile(createAddDTO.file(), extension, now);
         }
+        // Save add
+        var savedAdd = saveAddPort.save(add);
         // Send Payment Event
-        sendPaymentAddPort.sendPaymentEvent(new PaidAddDTO());
+        sendNotificationAddPayment.sendPaymentEvent(savedAdd.getId(), savedAdd.getUserId(), savedAdd.getPrice());
         // Send Notification Event
-        sendNotificationPort.sendNotification(new NotificacionDTO());
-        //Save Add
-        return saveAddPort.save(add);
+        sendNotificationPort.sendNotification(savedAdd.getUserId(),"Su anuncio ha sido creado y está pendiente de pago.");
+        return savedAdd;
     }
 
     private BigDecimal getPriceByType(AddType addType, PriceView price) {

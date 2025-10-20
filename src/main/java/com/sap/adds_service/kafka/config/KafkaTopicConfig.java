@@ -9,7 +9,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 class KafkaTopicConfig {
     @Bean
-    NewTopic addsCreated() {
+    NewTopic addsUpdate() {
         return new NewTopic(TopicConstants.UPDATE_PAID_STATUS_ADD_TOPIC, 1, (short) 1);
+    }
+
+    @Bean
+    NewTopic addsPendingPayment() {
+        return new NewTopic(TopicConstants.ADDS_PENDING_PAYMENT_TOPIC, 1, (short) 1);
     }
 }

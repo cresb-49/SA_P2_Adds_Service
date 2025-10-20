@@ -6,7 +6,6 @@ import com.sap.adds_service.adds.application.output.SaveAddPort;
 import com.sap.adds_service.adds.application.output.SendNotificationPort;
 import com.sap.adds_service.adds.application.usecases.updatepaidstatus.dtos.ChangePaidStateAddDTO;
 import com.sap.adds_service.adds.domain.Add;
-import com.sap.adds_service.adds.domain.dto.NotificacionDTO;
 import com.sap.common_lib.exception.NonRetryableBusinessException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,22 +26,20 @@ public class UpdatePaidStatusCase implements UpdatePaidStatusCasePort {
                 () -> new NonRetryableBusinessException("Anuncio no encontrado")
         );
         try {
-            NotificacionDTO notificacionDTO = null;
+            String message = null;
             if (changePaidStateAddDTO.paid()) {
                 add.markAsPaid();
-                // Send notificaion to user
-                notificacionDTO = new NotificacionDTO(); // Populate with success details
+                message = "Su anuncio fue pagado con exito!!!, ID: " + add.getId();
             } else {
                 add.markAsFailed();
-                // Send notificaion to user
-                notificacionDTO = new NotificacionDTO(); // Populate with failure details
+                message = "Su anuncio tubo un error de pago!!!, ID: " + add.getId();
             }
-            sendNotificationPort.sendNotification(notificacionDTO);
+            sendNotificationPort.sendNotification(add.getId(), message);
             //Save the add
             saveAddPort.save(add);
         } catch (IllegalStateException e) {
             // Send notification to user about failure
-            System.out.println(e.getMessage());
+            sendNotificationPort.sendNotification(add.getId(), e.getMessage());
         }
         // If ocurre other exception the transaction will be rollback and retry
     }

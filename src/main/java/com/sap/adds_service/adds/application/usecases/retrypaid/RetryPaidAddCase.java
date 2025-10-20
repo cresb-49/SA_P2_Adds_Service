@@ -1,13 +1,8 @@
 package com.sap.adds_service.adds.application.usecases.retrypaid;
 
 import com.sap.adds_service.adds.application.input.RetryPaidAddCasePort;
-import com.sap.adds_service.adds.application.output.FindingAddPort;
-import com.sap.adds_service.adds.application.output.SaveAddPort;
-import com.sap.adds_service.adds.application.output.SendNotificationPort;
-import com.sap.adds_service.adds.application.output.SendPaymentAddPort;
+import com.sap.adds_service.adds.application.output.*;
 import com.sap.adds_service.adds.domain.Add;
-import com.sap.adds_service.adds.domain.dto.NotificacionDTO;
-import com.sap.adds_service.adds.domain.dto.PaidAddDTO;
 import com.sap.common_lib.exception.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,8 +17,8 @@ public class RetryPaidAddCase implements RetryPaidAddCasePort {
 
     private final FindingAddPort findAddPort;
     private final SaveAddPort saveAddPort;
-    private final SendPaymentAddPort sendPaymentAddPort;
     private final SendNotificationPort sendNotificationPort;
+    private final SendNotificationAddPayment sendNotificationAddPayment;
 
     @Override
     public void retryPaidAdd(UUID addId) {
@@ -34,10 +29,11 @@ public class RetryPaidAddCase implements RetryPaidAddCasePort {
         add.retryPayment();
         //Validate and save
         add.validate();
+        // Save add
+        var savedAdd = saveAddPort.save(add);
         //Send payment event
-        sendPaymentAddPort.sendPaymentEvent(new PaidAddDTO());
+        sendNotificationAddPayment.sendPaymentEvent(savedAdd.getId(), savedAdd.getUserId(), savedAdd.getPrice());
         //Send notification event
-        sendNotificationPort.sendNotification(new NotificacionDTO());
-        saveAddPort.save(add);
+        sendNotificationPort.sendNotification(savedAdd.getUserId(), "Se ha reintentado el pago del anuncio con ID: " + savedAdd.getId());
     }
 }

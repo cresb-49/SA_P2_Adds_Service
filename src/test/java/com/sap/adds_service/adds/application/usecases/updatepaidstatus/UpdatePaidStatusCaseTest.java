@@ -1,5 +1,3 @@
-
-
 package com.sap.adds_service.adds.application.usecases.updatepaidstatus;
 
 import com.sap.adds_service.adds.application.output.FindingAddPort;
@@ -9,7 +7,6 @@ import com.sap.adds_service.adds.application.usecases.updatepaidstatus.dtos.Chan
 import com.sap.adds_service.adds.domain.Add;
 import com.sap.adds_service.adds.domain.AddType;
 import com.sap.adds_service.adds.domain.PaymentState;
-import com.sap.adds_service.adds.domain.dto.NotificacionDTO;
 import com.sap.common_lib.exception.NonRetryableBusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,11 +27,15 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class UpdatePaidStatusCaseTest {
 
-    @Mock private FindingAddPort findingAddPort;
-    @Mock private SaveAddPort saveAddPort;
-    @Mock private SendNotificationPort sendNotificationPort;
+    @Mock
+    private FindingAddPort findingAddPort;
+    @Mock
+    private SaveAddPort saveAddPort;
+    @Mock
+    private SendNotificationPort sendNotificationPort;
 
-    @InjectMocks private UpdatePaidStatusCase useCase;
+    @InjectMocks
+    private UpdatePaidStatusCase useCase;
 
     private static final UUID ADD_ID = UUID.randomUUID();
 
@@ -67,7 +68,7 @@ class UpdatePaidStatusCaseTest {
     @Test
     void updatePaidStatusEvent_shouldThrow_whenAddNotFound() {
         // Arrange
-        ChangePaidStateAddDTO dto = new ChangePaidStateAddDTO(ADD_ID, true,"Test illegal state");
+        ChangePaidStateAddDTO dto = new ChangePaidStateAddDTO(ADD_ID, true, "Test illegal state");
         when(findingAddPort.findById(ADD_ID)).thenReturn(Optional.empty());
 
         // Act & Assert
@@ -80,7 +81,7 @@ class UpdatePaidStatusCaseTest {
     void updatePaidStatusEvent_shouldMarkAsPaid_andNotify() {
         // Arrange
         Add add = spy(buildAdd(PaymentState.PENDING));
-        ChangePaidStateAddDTO dto = new ChangePaidStateAddDTO(ADD_ID, true,"Test illegal state");
+        ChangePaidStateAddDTO dto = new ChangePaidStateAddDTO(ADD_ID, true, "Test illegal state");
         when(findingAddPort.findById(ADD_ID)).thenReturn(Optional.of(add));
 
         // Act
@@ -88,7 +89,7 @@ class UpdatePaidStatusCaseTest {
 
         // Assert
         verify(add).markAsPaid();
-        verify(sendNotificationPort).sendNotification(any(NotificacionDTO.class));
+        verify(sendNotificationPort).sendNotification(any(UUID.class), any(String.class));
         verify(saveAddPort).save(add);
     }
 
@@ -96,7 +97,7 @@ class UpdatePaidStatusCaseTest {
     void updatePaidStatusEvent_shouldMarkAsFailed_andNotify() {
         // Arrange
         Add add = spy(buildAdd(PaymentState.PENDING));
-        ChangePaidStateAddDTO dto = new ChangePaidStateAddDTO(ADD_ID, false,"Test illegal state");
+        ChangePaidStateAddDTO dto = new ChangePaidStateAddDTO(ADD_ID, false, "Test illegal state");
         when(findingAddPort.findById(ADD_ID)).thenReturn(Optional.of(add));
 
         // Act
@@ -104,15 +105,15 @@ class UpdatePaidStatusCaseTest {
 
         // Assert
         verify(add).markAsFailed();
-        verify(sendNotificationPort).sendNotification(any(NotificacionDTO.class));
+        verify(sendNotificationPort).sendNotification(any(UUID.class),any(String.class));
         verify(saveAddPort).save(add);
     }
 
     @Test
-    void updatePaidStatusEvent_shouldCatchIllegalStateException_andContinue() {
+    void updatePaidStatusEvent_shouldCatchIllegalStateException_andNotify() {
         // Arrange
-        Add add = mock(Add.class);
-        ChangePaidStateAddDTO dto = new ChangePaidStateAddDTO(ADD_ID, true,"Test illegal state");
+        Add add = spy(buildAdd(PaymentState.PENDING));
+        ChangePaidStateAddDTO dto = new ChangePaidStateAddDTO(ADD_ID, true, "Test illegal state");
         when(findingAddPort.findById(ADD_ID)).thenReturn(Optional.of(add));
         doThrow(new IllegalStateException("Error")).when(add).markAsPaid();
 
@@ -120,7 +121,7 @@ class UpdatePaidStatusCaseTest {
         useCase.updatePaidStatusEvent(dto);
 
         // Assert
-        verify(sendNotificationPort, never()).sendNotification(any());
+        verify(sendNotificationPort).sendNotification(eq(ADD_ID), any(String.class));
         verify(saveAddPort, never()).save(any());
     }
 }

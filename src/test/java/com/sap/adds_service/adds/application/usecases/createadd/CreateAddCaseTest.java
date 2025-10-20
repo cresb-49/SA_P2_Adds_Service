@@ -4,8 +4,8 @@ import com.sap.adds_service.adds.application.output.*;
 import com.sap.adds_service.adds.application.usecases.createadd.dtos.CreateAddDTO;
 import com.sap.adds_service.adds.domain.Add;
 import com.sap.adds_service.adds.domain.AddType;
-import com.sap.adds_service.adds.domain.PriceView;
 import com.sap.adds_service.adds.domain.DurationView;
+import com.sap.adds_service.adds.domain.PriceView;
 import com.sap.common_lib.exception.NotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,14 +16,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,11 +38,12 @@ class CreateAddCaseTest {
     @Mock
     private FindDurationPort findDurationPort;
     @Mock
-    private SendPaymentAddPort sendPaymentAddPort;
-    @Mock
     private SendNotificationPort sendNotificationPort;
     @Mock
     private FindCinemaPort findCinemaPort;
+
+    @Mock
+    private SendNotificationAddPayment sendNotificationAddPayment;
 
     @InjectMocks
     private CreateAddCase useCase;
@@ -91,7 +92,7 @@ class CreateAddCaseTest {
         when(findCinemaPort.checkIfCinemaExistsById(CINEMA_ID)).thenReturn(false);
         // Act & Assert
         assertThatThrownBy(() -> useCase.create(dto)).isInstanceOf(NotFoundException.class);
-        verifyNoInteractions(findingPricePort, findDurationPort, saveAddPort, saveFilePort, sendPaymentAddPort,
+        verifyNoInteractions(findingPricePort, findDurationPort, saveAddPort, saveFilePort,
                 sendNotificationPort);
     }
 
@@ -107,7 +108,7 @@ class CreateAddCaseTest {
         assertThatThrownBy(() -> useCase.create(dto)).isInstanceOf(NotFoundException.class);
         verify(findCinemaPort).checkIfCinemaExistsById(CINEMA_ID);
         verifyNoMoreInteractions(findCinemaPort);
-        verifyNoInteractions(findDurationPort, saveAddPort, saveFilePort, sendPaymentAddPort, sendNotificationPort);
+        verifyNoInteractions(findDurationPort, saveAddPort, saveFilePort, sendNotificationPort);
     }
 
     @Test
@@ -123,7 +124,7 @@ class CreateAddCaseTest {
         when(findDurationPort.findById(DURATION_ID)).thenReturn(Optional.empty());
         // Act & Assert
         assertThatThrownBy(() -> useCase.create(dto)).isInstanceOf(NotFoundException.class);
-        verifyNoInteractions(saveAddPort, saveFilePort, sendPaymentAddPort, sendNotificationPort);
+        verifyNoInteractions(saveAddPort, saveFilePort, sendNotificationPort);
     }
 
     @Test
@@ -172,8 +173,7 @@ class CreateAddCaseTest {
         Add result = useCase.create(dto);
         // Assert
         assertThat(result).isNotNull();
-        verify(sendPaymentAddPort, times(1)).sendPaymentEvent(any());
-        verify(sendNotificationPort, times(1)).sendNotification(any());
+        verify(sendNotificationPort, times(1)).sendNotification(any(), any());
         verifyNoInteractions(saveFilePort);
         verify(saveAddPort, times(1)).save(any(Add.class));
     }
@@ -189,8 +189,7 @@ class CreateAddCaseTest {
         Add result = useCase.create(dto);
         // Assert
         assertThat(result).isNotNull();
-        verify(sendPaymentAddPort, times(1)).sendPaymentEvent(any());
-        verify(sendNotificationPort, times(1)).sendNotification(any());
+        verify(sendNotificationPort, times(1)).sendNotification(any(), any());
         verify(saveAddPort, times(1)).save(any(Add.class));
         verifyNoInteractions(saveFilePort);
     }
@@ -202,7 +201,7 @@ class CreateAddCaseTest {
         MultipartFile file = mock(MultipartFile.class);
         when(file.isEmpty()).thenReturn(false);
         when(file.getOriginalFilename()).thenReturn("image.png");
-        when(file.getBytes()).thenReturn(new byte[] { 1, 2, 3 });
+        when(file.getBytes()).thenReturn(new byte[]{1, 2, 3});
         CreateAddDTO dto = mockDto(null, AddType.MEDIA_VERTICAL, "desc", null, file);
         stubHappyInfra();
         when(saveAddPort.save(any(Add.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -212,7 +211,6 @@ class CreateAddCaseTest {
         assertThat(result).isNotNull();
         verify(saveFilePort, times(1)).uploadFile(any(), any(), anyString(), any());
         verify(saveAddPort, times(1)).save(any(Add.class));
-        verify(sendPaymentAddPort, times(1)).sendPaymentEvent(any());
-        verify(sendNotificationPort, times(1)).sendNotification(any());
+        verify(sendNotificationPort, times(1)).sendNotification(any(), any());
     }
 }
