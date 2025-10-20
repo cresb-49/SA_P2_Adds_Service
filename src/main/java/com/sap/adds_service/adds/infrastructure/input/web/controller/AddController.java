@@ -22,6 +22,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import com.sap.common_lib.dto.response.RestApiErrorDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Tag(name = "Anuncios", description = "Endpoints para gestionar anuncios (adds) del sistema")
 @Controller
 @RequestMapping("/api/v1/adds")
 @AllArgsConstructor
@@ -40,6 +53,27 @@ public class AddController {
     // Mapper
     private final AddResponseMapper addResponseMapper;
 
+    @Operation(
+            summary = "Buscar anuncios por filtros",
+            description = "Filtra anuncios por tipo, estado de pago, activo, cine y usuario. Retorna una página de resultados.")
+    @Parameters({
+            @Parameter(name = "type", description = "Tipo de anuncio", schema = @Schema(implementation = AddType.class), examples = {
+                    @ExampleObject(name = "Texto", value = "TEXT_BANNER"),
+                    @ExampleObject(name = "Vertical", value = "MEDIA_VERTICAL"),
+                    @ExampleObject(name = "Horizontal", value = "MEDIA_HORIZONTAL")
+            }),
+            @Parameter(name = "paymentState", description = "Estado de pago del anuncio", schema = @Schema(implementation = PaymentState.class)),
+            @Parameter(name = "active", description = "Si el anuncio está activo"),
+            @Parameter(name = "cinemaId", description = "Identificador del cine"),
+            @Parameter(name = "userId", description = "Identificador del usuario propietario"),
+            @Parameter(name = "page", description = "Número de página (0-index)", example = "0")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Página de anuncios recuperada correctamente"),
+            @ApiResponse(responseCode = "400", description = "Parámetros inválidos", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/search")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN') or hasRole('SPONSOR')")
     public ResponseEntity<?> getAllAddsByFilters(
@@ -55,6 +89,15 @@ public class AddController {
         return ResponseEntity.ok(addResponseMapper.toResponsePage(result));
     }
 
+    @Operation(summary = "Listar todos los anuncios", description = "Retorna una página con todos los anuncios.")
+    @Parameters({
+            @Parameter(name = "page", description = "Número de página (0-index)", example = "0")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Página de anuncios recuperada correctamente"),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN') or hasRole('SPONSOR')")
     public ResponseEntity<?> getAllAdds(
@@ -64,6 +107,19 @@ public class AddController {
         return ResponseEntity.ok(addResponseMapper.toResponsePage(result));
     }
 
+    @Operation(summary = "Obtener anuncio aleatorio público",
+            description = "Obtiene un anuncio aleatorio activo por tipo y cine. Endpoint público.")
+    @Parameters({
+            @Parameter(name = "cinemaId", description = "Identificador del cine", required = true),
+            @Parameter(name = "type", description = "Tipo de anuncio", required = true, schema = @Schema(implementation = AddType.class)),
+            @Parameter(name = "currentDateTime", description = "Fecha y hora ISO-8601 opcional para evaluar vigencia", example = "2025-10-19T12:34:56")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Anuncio encontrado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Parámetros inválidos", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "404", description = "No existe un anuncio vigente que cumpla los criterios", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
+    })
     //Public endpoint to get random add by type and cinema id
     @GetMapping("/public/cinema/{cinemaId}/type/{type}/random")
     public ResponseEntity<?> getRandomAdd(
@@ -76,6 +132,16 @@ public class AddController {
         return ResponseEntity.ok(addResponseMapper.toResponse(add));
     }
 
+    @Operation(summary = "Obtener anuncio por ID", description = "Recupera la información de un anuncio por su identificador.")
+    @Parameters({
+            @Parameter(name = "id", description = "Identificador del anuncio", required = true)
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Anuncio encontrado"),
+            @ApiResponse(responseCode = "404", description = "Anuncio no encontrado", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN') or hasRole('SPONSOR')")
     public ResponseEntity<?> getAddById(@PathVariable UUID id) {
@@ -83,6 +149,17 @@ public class AddController {
         return ResponseEntity.ok(addResponseMapper.toResponse(add));
     }
 
+    @Operation(summary = "Listar anuncios por tipo", description = "Retorna una página de anuncios filtrados por tipo.")
+    @Parameters({
+            @Parameter(name = "type", description = "Tipo de anuncio", required = true),
+            @Parameter(name = "page", description = "Número de página (0-index)", example = "0")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Página de anuncios recuperada correctamente"),
+            @ApiResponse(responseCode = "400", description = "Parámetros inválidos", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/type/{type}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN') or hasRole('SPONSOR')")
     public ResponseEntity<?> getAddsByType(
@@ -93,6 +170,17 @@ public class AddController {
         return ResponseEntity.ok(addResponseMapper.toResponsePage(result));
     }
 
+    @Operation(summary = "Listar anuncios por estado activo", description = "Retorna una página de anuncios según su estado de activación.")
+    @Parameters({
+            @Parameter(name = "active", description = "Si el anuncio está activo", required = true),
+            @Parameter(name = "page", description = "Número de página (0-index)", example = "0")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Página de anuncios recuperada correctamente"),
+            @ApiResponse(responseCode = "400", description = "Parámetros inválidos", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/active/{active}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN') or hasRole('SPONSOR')")
     public ResponseEntity<?> getAddsByActive(
@@ -103,6 +191,17 @@ public class AddController {
         return ResponseEntity.ok(addResponseMapper.toResponsePage(result));
     }
 
+    @Operation(summary = "Listar anuncios por cine", description = "Retorna una página de anuncios pertenecientes a un cine específico.")
+    @Parameters({
+            @Parameter(name = "cinemaId", description = "Identificador del cine", required = true),
+            @Parameter(name = "page", description = "Número de página (0-index)", example = "0")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Página de anuncios recuperada correctamente"),
+            @ApiResponse(responseCode = "400", description = "Parámetros inválidos", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/cinema/{cinemaId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN') or hasRole('SPONSOR')")
     public ResponseEntity<?> getAddsByCinemaId(
@@ -113,6 +212,17 @@ public class AddController {
         return ResponseEntity.ok(addResponseMapper.toResponsePage(result));
     }
 
+    @Operation(summary = "Listar anuncios por usuario", description = "Retorna una página de anuncios creados por un usuario.")
+    @Parameters({
+            @Parameter(name = "userId", description = "Identificador del usuario", required = true),
+            @Parameter(name = "page", description = "Número de página (0-index)", example = "0")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Página de anuncios recuperada correctamente"),
+            @ApiResponse(responseCode = "400", description = "Parámetros inválidos", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/user/{userId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN') or hasRole('SPONSOR')")
     public ResponseEntity<?> getAddsByUserId(
@@ -123,6 +233,13 @@ public class AddController {
         return ResponseEntity.ok(addResponseMapper.toResponsePage(result));
     }
 
+    @Operation(summary = "Obtener anuncios por lista de IDs", description = "Recupera un listado de anuncios a partir de sus identificadores.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Listado de anuncios recuperado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Solicitud inválida", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/ids")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN') or hasRole('SPONSOR')")
     public ResponseEntity<?> getAddsByIds(@RequestBody List<UUID> ids) {
@@ -130,6 +247,18 @@ public class AddController {
         return ResponseEntity.ok(addResponseMapper.toResponseList(adds));
     }
 
+    @Operation(summary = "Crear anuncio",
+            description = "Crea un nuevo anuncio. Puede incluir un archivo multimedia opcional.")
+    @Parameters({
+            @Parameter(name = "file", description = "Archivo multimedia opcional (imagen o video)", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE))
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Anuncio creado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Solicitud inválida", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "409", description = "Conflicto: el recurso ya existe", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN') or hasRole('SPONSOR')")
     public ResponseEntity<?> createAdd(
@@ -140,6 +269,16 @@ public class AddController {
         return ResponseEntity.ok(addResponseMapper.toResponse(add));
     }
 
+    @Operation(summary = "Eliminar anuncio", description = "Elimina un anuncio por su identificador.")
+    @Parameters({
+            @Parameter(name = "id", description = "Identificador del anuncio", required = true)
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Anuncio eliminado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Anuncio no encontrado", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN') or hasRole('SPONSOR')")
     public ResponseEntity<?> deleteAdd(@PathVariable UUID id) {
@@ -147,6 +286,17 @@ public class AddController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Cambiar estado de activación", description = "Activa o desactiva un anuncio.")
+    @Parameters({
+            @Parameter(name = "id", description = "Identificador del anuncio", required = true)
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Estado actualizado correctamente"),
+            @ApiResponse(responseCode = "404", description = "Anuncio no encontrado", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "409", description = "Conflicto de estado", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @PatchMapping("/state/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN') or hasRole('SPONSOR')")
     public ResponseEntity<?> changeStateAdd(@PathVariable UUID id) {
@@ -154,6 +304,20 @@ public class AddController {
         return ResponseEntity.ok(addResponseMapper.toResponse(add));
     }
 
+    @Operation(summary = "Actualizar anuncio",
+            description = "Actualiza los datos de un anuncio existente. Puede incluir un archivo multimedia opcional.")
+    @Parameters({
+            @Parameter(name = "id", description = "Identificador del anuncio", required = true),
+            @Parameter(name = "file", description = "Archivo multimedia opcional (imagen o video)", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE))
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Anuncio actualizado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Solicitud inválida", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Anuncio no encontrado", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "409", description = "Conflicto de actualización", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
+    })
+    @SecurityRequirement(name = "bearerAuth")
     @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN') or hasRole('SPONSOR')")
     public ResponseEntity<?> updateAdd(
@@ -165,12 +329,28 @@ public class AddController {
         return ResponseEntity.ok(addResponseMapper.toResponse(add));
     }
 
+    @Operation(summary = "Reintentar confirmación de pago",
+            description = "Reintenta la lógica de confirmación/cambio de estado de pago para un anuncio específico.")
+    @Parameters({
+            @Parameter(name = "addId", description = "Identificador del anuncio", required = true)
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Proceso de reintento ejecutado"),
+            @ApiResponse(responseCode = "404", description = "Anuncio no encontrado", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
+    })
     @PostMapping("/retry-paid/{addId}")
     public ResponseEntity<?> retryPaidAdd(@PathVariable UUID addId) {
         retryPaidAddCasePort.retryPaidAdd(addId);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "(Demo) Probar envío de evento a Kafka",
+            description = "Endpoint de prueba pública para enviar un evento de cambio de estado de pago a Kafka.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Evento enviado"),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
+    })
     @GetMapping("/public/test/kafka")
     public ResponseEntity<?> testKafka() {
 
