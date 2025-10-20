@@ -168,6 +168,16 @@
 				<configuration>
 					<excludes>
 						<exclude>**/dtos/**</exclude>
+						<exclude>**/dto/**</exclude>
+						<exclude>**/mappers/**</exclude>
+						<exclude>**/mapper/**</exclude>
+						<exclude>**/controllers/**</exclude>
+						<exclude>**/controller/**</exclude>
+						<!-- Exclude classes or files with 'View' in their name -->
+						<exclude>**/*View*.class</exclude>
+						<exclude>**/*View*.java</exclude>
+						<exclude>**/*Views*.class</exclude>
+						<exclude>**/*Views*.java</exclude>
 					</excludes>
 				</configuration>
 				<executions>
