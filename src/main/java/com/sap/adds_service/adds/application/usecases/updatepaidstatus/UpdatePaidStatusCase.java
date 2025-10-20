@@ -32,7 +32,7 @@ public class UpdatePaidStatusCase implements UpdatePaidStatusCasePort {
                 message = "Su anuncio fue pagado con exito!!!, ID: " + add.getId();
             } else {
                 add.markAsFailed();
-                message = "Su anuncio tubo un error de pago!!!, ID: " + add.getId();
+                message = "Su anuncio tubo un error de pago!!!, ID: " + add.getId() + ", " + changePaidStateAddDTO.message();
             }
             sendNotificationPort.sendNotification(add.getId(), message);
             //Save the add
