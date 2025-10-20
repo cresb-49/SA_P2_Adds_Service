@@ -21,7 +21,7 @@ public class FindDurationCase implements FindDurationCasePort {
     @Override
     public Duration findById(UUID id) {
         return findDurationPort.findById(id).orElseThrow(
-                () -> new NotFoundException("Duration not found")
+                () -> new NotFoundException("Duración no encontrada")
         );
     }
 

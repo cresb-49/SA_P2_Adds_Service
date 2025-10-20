@@ -23,7 +23,7 @@ public class FindAddCase implements FindAddPort {
     @Override
     public Add findById(UUID id) {
         return findingAddPort.findById(id).orElseThrow(
-                () -> new NotFoundException("Add not found")
+                () -> new NotFoundException("Anuncio no encontrado")
         );
     }
 

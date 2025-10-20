@@ -21,7 +21,7 @@ public class CreateDurationCase implements CreateDurationCasePort {
     public Duration create(CreateDurationDTO createDurationDTO) {
         // Check if a duration with the same name already exists
         if (findDurationPort.existsByDaysDuration(createDurationDTO.days())) {
-            throw new IllegalArgumentException("Duration with the same days already exists");
+            throw new IllegalArgumentException("Ya existe una duración con " + createDurationDTO.days() + " días");
         }
         // Create a new duration
         var duration = new Duration(createDurationDTO.days());

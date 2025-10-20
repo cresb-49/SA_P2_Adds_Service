@@ -21,7 +21,7 @@ public class DeletePriceCase implements DeletePriceCasePort {
     @Override
     public void deleteByCinemaId(UUID cinemaId) {
         if (!findPricePort.checkIfCinemaExistsById(cinemaId)) {
-            throw new NotFoundException("Price not found for cinema id: " + cinemaId);
+            throw new NotFoundException("Precio no encontrado para el cine con id: " + cinemaId);
         }
         deletePricePort.deleteByCinemaId(cinemaId);
     }
@@ -29,7 +29,7 @@ public class DeletePriceCase implements DeletePriceCasePort {
     @Override
     public void deleteById(UUID id) {
         findPricePort.findById(id).orElseThrow(
-                () -> new NotFoundException("Price not found for id: " + id)
+                () -> new NotFoundException("Precio no encontrado")
         );
         deletePricePort.deleteById(id);
     }

@@ -24,7 +24,7 @@ public class GetRandomAddCase implements GetRandomAddPort {
     public Add randomAddByTypeAndCinemaId(AddType type, UUID cinemaId, LocalDateTime currentDateTime) {
 
         return findingAddPort.findAddRandomByTypeAndCinemaIdAndNow(type.toString(), cinemaId, PaymentState.COMPLETED.toString(), currentDateTime).orElseThrow(
-                () -> new NotFoundException("No adds found for the given type and cinemaId")
+                () -> new NotFoundException("No se encontró ningún anuncio disponible")
         );
 
     }

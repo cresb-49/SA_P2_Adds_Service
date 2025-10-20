@@ -22,14 +22,14 @@ public class FindPriceCase implements FindPriceCasePort {
     @Override
     public Price findById(UUID id) {
         return findPricePort.findById(id).orElseThrow(
-                () -> new NotFoundException("Price not found for id: " + id)
+                () -> new NotFoundException("Precio no encontrado")
         );
     }
 
     @Override
     public Price findByCinemaId(UUID cinemaId) {
         return findPricePort.findByCinemaId(cinemaId).orElseThrow(
-                () -> new NotFoundException("Price not found for cinema id: " + cinemaId)
+                () -> new NotFoundException("Precio no encontrado para el cine con id: " + cinemaId)
         );
     }
 

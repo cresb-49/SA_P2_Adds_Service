@@ -25,7 +25,7 @@ public class CreatePriceCase implements CreatePriceCasePort {
     public Price createPrices(UUID cinemaId) {
         // Check if prices already exist for the cinema
         if (findPricePort.checkIfCinemaExistsById(cinemaId)) {
-            throw new IllegalArgumentException("Prices already exist for this cinema");
+            throw new IllegalArgumentException("Ya existen precios para este cine");
         }
         var price = new Price(
                 cinemaId,

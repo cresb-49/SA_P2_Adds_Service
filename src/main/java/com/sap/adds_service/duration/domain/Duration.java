@@ -21,7 +21,7 @@ public class Duration {
 
     public void validate() {
         if (days <= 0) {
-            throw new IllegalArgumentException("Duration in days must be positive");
+            throw new IllegalArgumentException("La duración debe ser un número positivo de días");
         }
     }
 }

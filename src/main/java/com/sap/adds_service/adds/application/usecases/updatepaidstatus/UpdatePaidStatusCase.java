@@ -24,7 +24,7 @@ public class UpdatePaidStatusCase implements UpdatePaidStatusCasePort {
     @Override
     public void updatePaidStatusEvent(ChangePaidStateAddDTO changePaidStateAddDTO) {
         Add add = findingAddPort.findById(changePaidStateAddDTO.addId()).orElseThrow(
-                () -> new NonRetryableBusinessException("Add with ID: " + changePaidStateAddDTO.addId() + " not found")
+                () -> new NonRetryableBusinessException("Anuncio no encontrado")
         );
         try {
             NotificacionDTO notificacionDTO = null;

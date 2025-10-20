@@ -22,7 +22,7 @@ public class ChangeStateAddCase implements ChangeStateAddPort {
     @Override
     public Add changeState(UUID id) {
         Add add = findingAddPort.findById(id).orElseThrow(
-                () -> new NotFoundException("Add not found")
+                () -> new NotFoundException("Anuncio no encontrado")
         );
         // Toggle the active state
         add.changeActive();

@@ -47,28 +47,28 @@ public class CreateAddCase implements CreateAddPort {
     public Add create(CreateAddDTO createAddDTO) {
         //Check if cinema has prices set
         var price = findingPricePort.findByCinemaId(createAddDTO.cinemaId()).orElseThrow(
-                () -> new NotFoundException("Cinema must have prices set before creating an add")
+                () -> new NotFoundException("Los precios no están configurados para el cine")
         );
         // Check if duration is valid
         var duration = findDurationPort.findById(createAddDTO.durationDaysId()).orElseThrow(
-                () -> new NotFoundException("Duration not found")
+                () -> new NotFoundException("Duración no encontrada")
         );
         //Get a current timestamp
         var now = String.valueOf(System.currentTimeMillis());
         var useExternalUrl = createAddDTO.urlContent() != null && !createAddDTO.urlContent().isBlank();
         var containsFile = createAddDTO.file() != null && !createAddDTO.file().isEmpty();
         if (useExternalUrl && containsFile) {
-            throw new IllegalArgumentException("Cannot provide both a file and an external URL");
+            throw new IllegalArgumentException("No se puede proporcionar un archivo y una URL externa al mismo tiempo");
         }
         var originalFileName = containsFile ? createAddDTO.file().getOriginalFilename() : null;
         var extension = containsFile ? FileExtensionUtils.getExtensionNoDotLower(originalFileName) : "";
         if (containsFile && !extension.matches("^(png|jpg|jpeg|mp4|mov|gif)$")) {
-            throw new IllegalArgumentException("File must be png, jpg, jpeg, mp4, mov or gif");
+            throw new IllegalArgumentException("El archivo debe ser png, jpg, jpeg, mp4, mov o gif");
         }
         var isYouTubeUrl = useExternalUrl && isYouTubeUrl(createAddDTO.urlContent());
         var contentTypeExternal = isYouTubeUrl ? "youtube" : useExternalUrl ? DetectMineTypeResourceUtil.detectMimeTypeFromUrl(createAddDTO.urlContent()) : null;
         var localContentType = containsFile ? ContentTypeUtils.detectMimeFromName(originalFileName).orElseThrow(
-                () -> new IllegalArgumentException("Could not determine file type")
+                () -> new IllegalArgumentException("No se pudo determinar el tipo de archivo")
         ) : null;
         var contentType = isYouTubeUrl ? "youtube" : useExternalUrl ? contentTypeExternal : localContentType;
         //Calculate URL

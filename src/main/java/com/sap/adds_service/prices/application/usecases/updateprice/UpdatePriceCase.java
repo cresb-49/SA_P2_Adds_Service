@@ -21,7 +21,7 @@ public class UpdatePriceCase implements UpdatePriceCasePort {
     @Override
     public Price update(UpdatePriceDTO updatePriceDTO) {
         var price = findPricePort.findById(updatePriceDTO.id()).orElseThrow(
-                () -> new NotFoundException("Price not found")
+                () -> new NotFoundException("Precio no encontrado")
         );
         // update the price
         price.update(

@@ -57,7 +57,7 @@ public class Add {
      */
     public void changeActive() {
         if (this.paymentState != PaymentState.COMPLETED) {
-            throw new IllegalStateException("Cannot change active status of an unpaid add Add ID: " + this.id);
+            throw new IllegalStateException("No se puede cambiar el estado de un anuncio no pagado. Add ID: " + this.id);
         }
         this.active = !this.active;
         this.updatedAt = LocalDateTime.now();
@@ -68,10 +68,10 @@ public class Add {
      */
     public void markAsPaid() {
         if (this.paymentState == PaymentState.COMPLETED) {
-            throw new IllegalStateException("Add ID:"+ this.id + " is already marked as paid");
+            throw new IllegalStateException("Add ID:"+ this.id + " ya está marcado como pagado");
         }
         if(this.paymentState == PaymentState.FAILED){
-            throw new IllegalStateException("Cannot mark a failed payment as paid directly. Please retry payment first. Add ID: " + this.id);
+            throw new IllegalStateException("No se puede marcar un pago fallido como pagado directamente. Por favor, intente el pago primero. Add ID: " + this.id);
         }
         this.paymentState = PaymentState.COMPLETED;
         this.active = true;
@@ -84,10 +84,10 @@ public class Add {
      */
     public void markAsFailed() {
         if (this.paymentState == PaymentState.COMPLETED) {
-            throw new IllegalStateException("Cannot mark a completed payment as failed Add ID: " + this.id);
+            throw new IllegalStateException("No se puede marcar un pago completado como fallido. Add ID: " + this.id);
         }
         if(this.paymentState == PaymentState.FAILED){
-            throw new IllegalStateException("Add is already marked as failed Add ID: " + this.id);
+            throw new IllegalStateException("El anuncio ya está marcado como fallido. Add ID: " + this.id);
         }
         this.paymentState = PaymentState.FAILED;
         this.active = false;
@@ -99,7 +99,7 @@ public class Add {
      */
     public void retryPayment() {
         if (this.paymentState != PaymentState.FAILED) {
-            throw new IllegalStateException("Can only retry payment for a failed add Add ID: " + this.id);
+            throw new IllegalStateException("Solo se puede reintentar el pago de un anuncio fallido. Add ID: " + this.id);
         }
         this.paymentState = PaymentState.PENDING;
         this.active = false;
@@ -145,16 +145,16 @@ public class Add {
      */
     public void validate() {
         if (this.description == null || this.description.isEmpty()) {
-            throw new IllegalArgumentException("Description is required");
+            throw new IllegalArgumentException("La descripción es obligatoria");
         }
         if (this.description.length() > DESCRIPTION_MAX_LENGTH) {
-            throw new IllegalArgumentException("Description must be less than 255 characters");
+            throw new IllegalArgumentException("La descripción debe tener menos de 255 caracteres");
         }
         if (this.cinemaId == null) {
-            throw new IllegalArgumentException("Cinema ID is required");
+            throw new IllegalArgumentException("El Cinema ID es obligatorio");
         }
         if (this.type == null) {
-            throw new IllegalArgumentException("Add type is required");
+            throw new IllegalArgumentException("El tipo de anuncio es obligatorio");
         }
         switch (this.type) {
             case MEDIA_HORIZONTAL, MEDIA_VERTICAL -> {
@@ -163,10 +163,10 @@ public class Add {
             case TEXT_BANNER -> {
                 this.validationsTextBanner();
             }
-            default -> throw new IllegalStateException("Unknown add type: " + this.type);
+            default -> throw new IllegalStateException("Tipo de anuncio desconocido: " + this.type);
         }
         if (this.userId == null) {
-            throw new IllegalArgumentException("User ID is required");
+            throw new IllegalArgumentException("El User ID es obligatorio");
         }
     }
 
@@ -175,13 +175,13 @@ public class Add {
      */
     private void validationsMediaType() {
         if (this.content != null && !this.content.isEmpty()) {
-            throw new IllegalArgumentException("Content must be empty for media types");
+            throw new IllegalArgumentException("El contenido debe estar vacío para los tipos de medios");
         }
         if (this.urlContent == null || this.urlContent.isEmpty()) {
-            throw new IllegalArgumentException("Media is required for media types");
+            throw new IllegalArgumentException("El medio es obligatorio para los tipos de medios");
         }
         if (this.contentType == null || this.contentType.isEmpty()) {
-            throw new IllegalArgumentException("Content type is required for media types");
+            throw new IllegalArgumentException("El tipo de contenido es obligatorio para los tipos de medios");
         }
     }
 
@@ -190,13 +190,13 @@ public class Add {
      */
     private void validationsTextBanner() {
         if (this.content == null || this.content.isEmpty()) {
-            throw new IllegalArgumentException("Content is required for text banner");
+            throw new IllegalArgumentException("El contenido es obligatorio para el banner de texto");
         }
         if (this.content.length() > CONTENT_MAX_LENGTH) {
-            throw new IllegalArgumentException("Content must be less than 255 characters");
+            throw new IllegalArgumentException("El contenido debe tener menos de 255 caracteres");
         }
         if (this.urlContent != null && !this.urlContent.isEmpty()) {
-            throw new IllegalArgumentException("Media is not allowed for text banner");
+            throw new IllegalArgumentException("El medio no está permitido para el banner de texto");
         }
     }
 }

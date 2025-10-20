@@ -43,16 +43,16 @@ public class UpdateAddCase implements UpdateAddPort {
         var useExternalUrl = updateAddDTO.urlContent() != null && !updateAddDTO.urlContent().isBlank();
         var containsFile = updateAddDTO.file() != null && !updateAddDTO.file().isEmpty();
         if (useExternalUrl && containsFile) {
-            throw new IllegalArgumentException("Cannot provide both a file and an external URL");
+            throw new IllegalArgumentException("No se puede proporcionar una URL externa y un archivo al mismo tiempo");
         }
         var originalFileName = containsFile ? updateAddDTO.file().getOriginalFilename() : null;
         var extension = containsFile ? FileExtensionUtils.getExtensionNoDotLower(originalFileName) : "";
         if (containsFile && !extension.matches("^(png|jpg|jpeg|mp4|mov|gif)$")) {
-            throw new IllegalArgumentException("File must be png, jpg, jpeg, mp4, mov or gif");
+            throw new IllegalArgumentException("El archivo debe ser png, jpg, jpeg, mp4, mov o gif");
         }
         //Find existing add
         Add add = findingAddPort.findById(updateAddDTO.id()).orElseThrow(
-                () -> new NotFoundException("Add not found")
+                () -> new NotFoundException("Anuncio no encontrado")
         );
         var oldIsExternal = add.isExternalMedia();
         var oldUrl = add.getUrlContent();
@@ -60,7 +60,7 @@ public class UpdateAddCase implements UpdateAddPort {
         var isYouTubeUrl = useExternalUrl && isYouTubeUrl(updateAddDTO.urlContent());
         var contentTypeExternal = isYouTubeUrl ? "youtube" : useExternalUrl ? DetectMineTypeResourceUtil.detectMimeTypeFromUrl(updateAddDTO.urlContent()) : null;
         var localContentType = containsFile ? ContentTypeUtils.detectMimeFromName(originalFileName).orElseThrow(
-                () -> new IllegalArgumentException("Could not determine file type")
+                () -> new IllegalArgumentException("No se pudo determinar el tipo de archivo")
         ) : null;
         var contentType = isYouTubeUrl ? "youtube" : useExternalUrl ? contentTypeExternal : localContentType;
         //Calculate new url if there is a new file
@@ -119,7 +119,7 @@ public class UpdateAddCase implements UpdateAddPort {
             var keyName = urlParts[urlParts.length - 1];
             deletingFilePort.deleteFile(bucketName, bucketDirectory, keyName);
         } catch (Exception e) {
-            throw new RuntimeException("Error deleting file from bucket: " + e.getMessage());
+            throw new RuntimeException("Error al eliminar el archivo: " + e.getMessage());
         }
     }
 }

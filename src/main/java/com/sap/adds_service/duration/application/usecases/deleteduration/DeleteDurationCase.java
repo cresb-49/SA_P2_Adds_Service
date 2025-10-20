@@ -22,7 +22,7 @@ public class DeleteDurationCase implements DeleteDurationCasePort {
     public void deleteById(UUID id) {
         // Check if the duration exists
         findDurationPort.findById(id).orElseThrow(
-                () -> new NotFoundException("Duration not found")
+                () -> new NotFoundException("Duración no encontrada")
         );
         // Delete duration
         deleteDurationPort.deleteById(id);

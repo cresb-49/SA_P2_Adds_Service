@@ -28,7 +28,7 @@ public class RetryPaidAddCase implements RetryPaidAddCasePort {
     @Override
     public void retryPaidAdd(UUID addId) {
         Add add = findAddPort.findById(addId).orElseThrow(() -> new NotFoundException(
-                "Add with id " + addId + " not found"
+                "No se encontró el anuncio con ID: " + addId
         ));
         //Change status to active and reset payment attempts
         add.retryPayment();

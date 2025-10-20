@@ -43,16 +43,16 @@ public class Price {
 
     public void validate() {
         if (cinemaId == null) {
-            throw new IllegalArgumentException("Cinema ID cannot be null");
+            throw new IllegalArgumentException("El ID del cine no puede ser nulo");
         }
         if (amountTextBanner == null || amountTextBanner.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Amount for Text Banner must be non-negative");
+            throw new IllegalArgumentException("El monto del banner de texto debe ser mayor a cero");
         }
         if (amountMediaVertical == null || amountMediaVertical.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Amount for Media Vertical must be non-negative");
+            throw new IllegalArgumentException("El monto del banner de medios vertical debe ser mayor a cero");
         }
         if (amountMediaHorizontal == null || amountMediaHorizontal.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Amount for Media Horizontal must be non-negative");
+            throw new IllegalArgumentException("El monto del banner de medios horizontal debe ser mayor a cero");
         }
     }
 }

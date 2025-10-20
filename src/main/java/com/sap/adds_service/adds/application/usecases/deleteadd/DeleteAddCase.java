@@ -34,11 +34,11 @@ public class DeleteAddCase implements DeleteAddPort {
     @Override
     public void delete(UUID id) {
         var add = findingAddPort.findById(id).orElseThrow(
-                () -> new NotFoundException("Add not found")
+                () -> new NotFoundException("Anuncio no encontrado")
         );
         //Verify if te add is not pending or completed payments
         if(add.getPaymentState() == PaymentState.COMPLETED || add.getPaymentState() == PaymentState.PENDING){
-            throw new IllegalStateException("Cannot delete an add with pending or completed payments");
+            throw new IllegalStateException("No se puede eliminar un anuncio con pagos pendientes o completados");
         }
         deletingAddPort.deleteById(id);
         if (add.getUrlContent() != null && !add.isExternalMedia()) {
@@ -48,7 +48,7 @@ public class DeleteAddCase implements DeleteAddPort {
                 System.out.println("Deleting file with key: " + keyName);
                 deletingFilePort.deleteFile(bucketName, bucketDirectory, keyName);
             } catch (Exception e) {
-                throw new RuntimeException("Error deleting file from bucket: " + e.getMessage());
+                throw new RuntimeException("Error al eliminar el archivo: " + e.getMessage());
             }
         }
     }
