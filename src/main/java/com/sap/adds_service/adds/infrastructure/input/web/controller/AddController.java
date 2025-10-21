@@ -380,12 +380,13 @@ public class AddController {
             @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
     })
     @PostMapping("/report/bought")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> reportBoughtAdds(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
             @RequestParam(required = false) String addType,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodFrom,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodTo
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodTo
     ) {
         var result = buyAddsReportCasePort.report(
                 from,
@@ -397,13 +398,29 @@ public class AddController {
         return ResponseEntity.ok(addResponseMapper.toResponseList(result));
     }
 
+    @Operation(
+            summary = "Generar reporte de anuncios comprados (PDF)",
+            description = "Genera y descarga en formato PDF un reporte de anuncios comprados filtrado por tipo y rango de fechas.")
+    @Parameters({
+            @Parameter(name = "from", description = "Fecha y hora inicial en formato ISO-8601 (yyyy-MM-dd'T'HH:mm:ss)", example = "2025-01-01T00:00:00"),
+            @Parameter(name = "to", description = "Fecha y hora final en formato ISO-8601 (yyyy-MM-dd'T'HH:mm:ss)", example = "2025-01-31T23:59:59"),
+            @Parameter(name = "addType", description = "Tipo de anuncio (opcional)", schema = @Schema(implementation = AddType.class)),
+            @Parameter(name = "periodFrom", description = "Fecha inicial del periodo en formato ISO (yyyy-MM-dd) (opcional)", example = "2025-01-01"),
+            @Parameter(name = "periodTo", description = "Fecha final del periodo en formato ISO (yyyy-MM-dd) (opcional)", example = "2025-01-31")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Reporte PDF generado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Parámetros inválidos", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
+    })
     @PostMapping("/report/bought/pdf")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<byte[]> reportBoughtAddsPdf(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
             @RequestParam(required = false) String addType,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodFrom,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodTo
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodTo
     ) {
         var pdf = buyAddsReportCasePort.generateReportFile(
                 from,

@@ -17,7 +17,7 @@
 	<field name="user.firstName" class="java.lang.String"/>
 	<field name="user.lastName" class="java.lang.String"/>
 	<field name="user.email" class="java.lang.String"/>
-	<title height="80">
+	<title height="95">
 		<element kind="staticText" uuid="ee56df62-7fa6-4a8d-a080-4a4c04ea6d60" x="0" y="10" width="515" height="20" fontSize="16.0" bold="true" hTextAlign="Center">
 			<text><![CDATA[Anuncios Comprados]]></text>
 		</element>
@@ -34,6 +34,7 @@
 	<columnHeader height="20">
 		<element kind="staticText" uuid="e315ac3c-c651-40f1-ace3-bf4ed4ec80fc" x="0" y="0" width="60" height="15" bold="true" hTextAlign="Center">
 			<text><![CDATA[Tipo]]></text>
+			<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 		</element>
 		<element kind="staticText" uuid="3bc3d872-e316-4b27-8749-524aa2ab11df" x="60" y="0" width="100" height="15" bold="true" hTextAlign="Center">
 			<text><![CDATA[Usuario]]></text>
@@ -52,24 +53,24 @@
 		</element>
 	</columnHeader>
 	<detail>
-		<band height="20">
-			<element kind="textField" uuid="ddfbad2e-1cff-49e2-ba3b-c4d6554be487" x="0" y="0" width="60" height="15" hTextAlign="Center" vTextAlign="Middle">
+		<band height="23">
+			<element kind="textField" uuid="ddfbad2e-1cff-49e2-ba3b-c4d6554be487" x="0" y="0" width="60" height="15" fontSize="8.0" textAdjust="ScaleFont" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA[$F{type}.toString()]]></expression>
 			</element>
-			<element kind="textField" uuid="9cf88189-dccc-48c4-bcca-aa21283e9c7d" x="60" y="0" width="100" height="15" hTextAlign="Center" vTextAlign="Middle">
+			<element kind="textField" uuid="9cf88189-dccc-48c4-bcca-aa21283e9c7d" x="60" y="0" width="100" height="15" fontSize="8.0" textAdjust="ScaleFont" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA[$F{user.firstName} + " " + $F{user.lastName}]]></expression>
 			</element>
-			<element kind="textField" uuid="2a6e8127-c265-44ba-ba28-275ef20b5a8b" x="160" y="0" width="100" height="15" hTextAlign="Center" vTextAlign="Middle">
+			<element kind="textField" uuid="2a6e8127-c265-44ba-ba28-275ef20b5a8b" x="160" y="0" width="100" height="15" fontSize="8.0" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA[$F{cinema.name}]]></expression>
 			</element>
-			<element kind="textField" uuid="e8649c94-8788-4531-95ab-d6d18bc1ed0f" x="260" y="0" width="60" height="15" hTextAlign="Center" vTextAlign="Middle">
+			<element kind="textField" uuid="e8649c94-8788-4531-95ab-d6d18bc1ed0f" x="260" y="0" width="60" height="15" fontSize="8.0" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA[$F{price}]]></expression>
 			</element>
-			<element kind="textField" uuid="f383c521-c06a-40d6-b320-44a9988208c8" x="320" y="0" width="90" height="15" pattern="yyyy-MM-dd" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{paidAt}]]></expression>
+			<element kind="textField" uuid="f383c521-c06a-40d6-b320-44a9988208c8" x="320" y="0" width="90" height="15" fontSize="8.0" textAdjust="ScaleFont" blankWhenNull="false" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{paidAt}.format( java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:m") )]]></expression>
 			</element>
-			<element kind="textField" uuid="2aa7b3e0-14d1-43d7-b9bb-3cdd660df2c6" x="410" y="0" width="90" height="15" pattern="yyyy-MM-dd" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{addExpiration}]]></expression>
+			<element kind="textField" uuid="2aa7b3e0-14d1-43d7-b9bb-3cdd660df2c6" x="410" y="0" width="90" height="15" fontSize="8.0" textAdjust="ScaleFont" pattern="d/M/yy h:mm a" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{addExpiration}.format( java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:m") )]]></expression>
 			</element>
 		</band>
 	</detail>
