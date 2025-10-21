@@ -7,22 +7,9 @@ import com.sap.adds_service.adds.infrastructure.input.web.dtos.AddFilterRequestD
 import com.sap.adds_service.adds.infrastructure.input.web.dtos.CreateAddRequestDTO;
 import com.sap.adds_service.adds.infrastructure.input.web.dtos.UpdateAddRequestDTO;
 import com.sap.adds_service.adds.infrastructure.input.web.mappers.AddResponseMapper;
+import com.sap.common_lib.dto.response.RestApiErrorDTO;
 import com.sap.common_lib.dto.response.add.events.ChangePaidStateAddEventDTO;
 import com.sap.common_lib.events.topics.TopicConstants;
-import lombok.AllArgsConstructor;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
-
-import com.sap.common_lib.dto.response.RestApiErrorDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -33,6 +20,21 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @Tag(name = "Anuncios", description = "Endpoints para gestionar anuncios (adds) del sistema")
 @Controller
@@ -50,6 +52,7 @@ public class AddController {
     private final GetRandomAddPort getRandomAddPort;
     private final UpdateAddPort updateAddPort;
     private final RetryPaidAddCasePort retryPaidAddCasePort;
+    private final BuyAddsReportCasePort buyAddsReportCasePort;
     // Mapper
     private final AddResponseMapper addResponseMapper;
 
@@ -361,6 +364,59 @@ public class AddController {
         );
         kafka.send(TopicConstants.UPDATE_PAID_STATUS_ADD_TOPIC, event.addId().toString(), event);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "Generar reporte de anuncios comprados",
+            description = "Genera un reporte de anuncios comprados filtrado por tipo y rango de fechas.")
+    @Parameters({
+            @Parameter(name = "addType", description = "Tipo de anuncio (opcional)", schema = @Schema(implementation = AddType.class)),
+            @Parameter(name = "initialDate", description = "Fecha inicial en formato ISO (yyyy-MM-dd) (opcional)", example = "2025-01-01"),
+            @Parameter(name = "finalDate", description = "Fecha final en formato ISO (yyyy-MM-dd) (opcional)", example = "2025-01-31")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Reporte generado correctamente"),
+            @ApiResponse(responseCode = "400", description = "Parámetros inválidos", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
+    })
+    @PostMapping("/report/bought")
+    public ResponseEntity<?> reportBoughtAdds(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+            @RequestParam(required = false) String addType,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodFrom,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodTo
+    ) {
+        var result = buyAddsReportCasePort.report(
+                from,
+                to,
+                addType,
+                periodFrom,
+                periodTo
+        );
+        return ResponseEntity.ok(addResponseMapper.toResponseList(result));
+    }
+
+    @PostMapping("/report/bought/pdf")
+    public ResponseEntity<byte[]> reportBoughtAddsPdf(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
+            @RequestParam(required = false) String addType,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodFrom,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodTo
+    ) {
+        var pdf = buyAddsReportCasePort.generateReportFile(
+                from,
+                to,
+                addType,
+                periodFrom,
+                periodTo,
+                "PDF"
+        );
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=ads_purchased_report.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
     }
 
 }

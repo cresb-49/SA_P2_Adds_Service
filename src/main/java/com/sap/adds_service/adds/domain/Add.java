@@ -1,13 +1,15 @@
 package com.sap.adds_service.adds.domain;
 
+import com.sap.adds_service.adds.domain.dtos.CinemaView;
+import com.sap.adds_service.adds.domain.dtos.UserView;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@AllArgsConstructor
 @Getter
 public class Add {
 
@@ -31,6 +33,62 @@ public class Add {
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    //Optional fields used by Factory pattern
+    @Setter
+    private CinemaView cinema;
+    @Setter
+    private UserView user;
+
+    public Add(
+            UUID id,
+            String content,
+            AddType type,
+            String contentType,
+            boolean externalMedia,
+            String urlContent,
+            boolean active,
+            String description,
+            UUID cinemaId,
+            UUID userId,
+            PaymentState paymentState,
+            LocalDateTime paidAt,
+            BigDecimal price,
+            LocalDateTime addExpiration,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt
+    ) {
+        this.id = id;
+        this.content = content;
+        this.type = type;
+        this.contentType = contentType;
+        this.externalMedia = externalMedia;
+        this.urlContent = urlContent;
+        this.active = active;
+        this.description = description;
+        this.cinemaId = cinemaId;
+        this.userId = userId;
+        this.paymentState = paymentState;
+        this.paidAt = paidAt;
+        this.price = price;
+        this.addExpiration = addExpiration;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    /**
+     * Constructor for creating a new Add entity.
+     *
+     * @param content
+     * @param type
+     * @param contentType
+     * @param externalMedia
+     * @param urlContent
+     * @param description
+     * @param cinemaId
+     * @param userId
+     * @param durationDays
+     * @param price
+     */
     public Add(String content, AddType type, String contentType, boolean externalMedia,
                String urlContent, String description, UUID cinemaId, UUID userId, int durationDays, BigDecimal price
     ) {
@@ -68,9 +126,9 @@ public class Add {
      */
     public void markAsPaid() {
         if (this.paymentState == PaymentState.COMPLETED) {
-            throw new IllegalStateException("Add ID:"+ this.id + " ya está marcado como pagado");
+            throw new IllegalStateException("Add ID:" + this.id + " ya está marcado como pagado");
         }
-        if(this.paymentState == PaymentState.FAILED){
+        if (this.paymentState == PaymentState.FAILED) {
             throw new IllegalStateException("No se puede marcar un pago fallido como pagado directamente. Por favor, intente el pago primero. Add ID: " + this.id);
         }
         this.paymentState = PaymentState.COMPLETED;
@@ -86,7 +144,7 @@ public class Add {
         if (this.paymentState == PaymentState.COMPLETED) {
             throw new IllegalStateException("No se puede marcar un pago completado como fallido. Add ID: " + this.id);
         }
-        if(this.paymentState == PaymentState.FAILED){
+        if (this.paymentState == PaymentState.FAILED) {
             throw new IllegalStateException("El anuncio ya está marcado como fallido. Add ID: " + this.id);
         }
         this.paymentState = PaymentState.FAILED;

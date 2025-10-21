@@ -1,9 +1,10 @@
 package com.sap.adds_service.adds.infrastructure.output.jpa.adapter;
 
-import com.sap.adds_service.adds.application.usecases.findadd.dtos.AddFilter;
 import com.sap.adds_service.adds.application.output.DeletingAddPort;
+import com.sap.adds_service.adds.application.output.FindPurchasedAdds;
 import com.sap.adds_service.adds.application.output.FindingAddPort;
 import com.sap.adds_service.adds.application.output.SaveAddPort;
+import com.sap.adds_service.adds.application.usecases.findadd.dtos.AddFilter;
 import com.sap.adds_service.adds.domain.Add;
 import com.sap.adds_service.adds.domain.AddType;
 import com.sap.adds_service.adds.infrastructure.output.jpa.mapper.AddMapper;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +24,7 @@ import java.util.UUID;
 
 @Component
 @AllArgsConstructor
-public class AddJpaAdapter implements FindingAddPort, SaveAddPort, DeletingAddPort {
+public class AddJpaAdapter implements FindingAddPort, SaveAddPort, DeletingAddPort, FindPurchasedAdds {
 
     private final AddEntityRepository addEntityRepository;
     private final AddMapper addMapper;
@@ -110,5 +112,11 @@ public class AddJpaAdapter implements FindingAddPort, SaveAddPort, DeletingAddPo
         var entity = addMapper.toEntity(add);
         var savedEntity = addEntityRepository.save(entity);
         return addMapper.toDomain(savedEntity);
+    }
+
+    @Override
+    public List<Add> findPurchasedAdds(LocalDateTime from, LocalDateTime to, String type, LocalDate periodFrom, LocalDate periodTo, String paymentState) {
+        var entities = addEntityRepository.findPurchasedAdds(from, to, type, periodFrom, periodTo, paymentState);
+        return entities.stream().map(addMapper::toDomain).toList();
     }
 }

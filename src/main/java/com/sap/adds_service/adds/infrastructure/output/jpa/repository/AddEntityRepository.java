@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -59,5 +60,42 @@ public interface AddEntityRepository extends JpaRepository<AddEntity, UUID>, Jpa
             @Param("cinemaId") UUID cinemaId,
             @Param("paymentState") String paymentState,
             @Param("currentTime") LocalDateTime currentTime
+    );
+
+    @Query(
+            value = """
+                    SELECT *
+                    FROM adds a
+                    WHERE a.payment_state = :paymentState
+                      AND a.paid_at >= :from
+                      AND a.paid_at <  :to
+                      AND (:type IS NULL OR a.type = :type)
+                      AND (
+                           CAST(:periodFrom AS date) IS NULL OR CAST(:periodTo AS date) IS NULL
+                           OR (a.paid_at::date <= CAST(:periodTo AS date) AND a.add_expiration::date >= CAST(:periodFrom AS date))
+                      )
+                    ORDER BY a.paid_at DESC
+                    """,
+            countQuery = """
+                    SELECT COUNT(*)
+                    FROM adds a
+                    WHERE a.payment_state = :paymentState
+                      AND a.paid_at >= :from
+                      AND a.paid_at <  :to
+                      AND (:type IS NULL OR a.type = :type)
+                      AND (
+                           CAST(:periodFrom AS date) IS NULL OR CAST(:periodTo AS date) IS NULL
+                           OR (a.paid_at::date <= CAST(:periodTo AS date) AND a.add_expiration::date >= CAST(:periodFrom AS date))
+                      )
+                    """,
+            nativeQuery = true
+    )
+    List<AddEntity> findPurchasedAdds(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            @Param("type") String type, // usa String para mantener consistencia con tus otros @Query nativos
+            @Param("periodFrom") java.time.LocalDate periodFrom,
+            @Param("periodTo") java.time.LocalDate periodTo,
+            @Param("paymentState") String paymentState // típicamente "COMPLETED"
     );
 }
