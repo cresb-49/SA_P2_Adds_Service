@@ -3,6 +3,7 @@ package com.sap.adds_service.adds.infrastructure.output.kafka;
 import com.sap.adds_service.adds.application.output.SendNotificationAddPayment;
 import com.sap.adds_service.adds.application.output.SendNotificationPort;
 import com.sap.common_lib.dto.response.add.events.AddPendingPaymentEventDTO;
+import com.sap.common_lib.dto.response.notification.events.SendGenericMailEventDTO;
 import com.sap.common_lib.events.topics.TopicConstants;
 import lombok.AllArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -16,7 +17,7 @@ import java.util.UUID;
 public class KafkaAddEventAdapter implements SendNotificationPort, SendNotificationAddPayment {
 
     private final KafkaTemplate<String, AddPendingPaymentEventDTO> pendingPaymentEventDTOKafkaTemplate;
-
+    private final KafkaTemplate<String, SendGenericMailEventDTO> sendGenericMailEventDTOKafkaTemplate;
 
     @Override
     public void sendPaymentEvent(UUID addId, UUID userId, BigDecimal amount) {
@@ -30,6 +31,10 @@ public class KafkaAddEventAdapter implements SendNotificationPort, SendNotificat
 
     @Override
     public void sendNotification(UUID userId, String message) {
-        System.out.println("Sending notification to user " + userId + " with message: " + message);
+        var eventDTO = new SendGenericMailEventDTO(
+                userId.toString(),
+                message
+        );
+        sendGenericMailEventDTOKafkaTemplate.send(TopicConstants.REQUEST_GENERIC_MAIL, userId.toString(), eventDTO);
     }
 }
