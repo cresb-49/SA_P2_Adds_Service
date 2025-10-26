@@ -16,7 +16,7 @@ import java.util.UUID;
 public class UserGateway implements UserGatewayPort {
 
     private final WebClient.Builder webClient;
-    private static final String USER_SERVICE_URL = "http://user-service/api/v1/users";
+    private static final String USER_SERVICE_URL = "http://gateway/api/v1/users";
 
     @Override
     public boolean existsById(UUID userId) {
