@@ -3,7 +3,7 @@
 package com.sap.adds_service.adds.application.usecases.findadd;
 
 import com.sap.adds_service.adds.application.output.FindingAddPort;
-import com.sap.adds_service.adds.application.usecases.findadd.dtos.AddFilter;
+import com.sap.adds_service.adds.domain.AddFilter;
 import com.sap.adds_service.adds.domain.Add;
 import com.sap.adds_service.adds.domain.AddType;
 import com.sap.adds_service.adds.domain.PaymentState;
@@ -120,7 +120,7 @@ class FindAddCaseTest {
     @DisplayName("findByFilters: delega y retorna Page")
     void findByFilters_shouldDelegate() {
         // Arrange
-        AddFilter filter = new AddFilter(null, null, null, null, null);
+        AddFilter filter = new AddFilter(null, null, null, null, null, null, null);
         Page<Add> page = new PageImpl<>(List.of(sampleAdd()));
         when(findingAddPort.findByFilers(filter, 4)).thenReturn(page);
         // Act

@@ -1,6 +1,6 @@
 package com.sap.adds_service.adds.application.input;
 
-import com.sap.adds_service.adds.application.usecases.findadd.dtos.AddFilter;
+import com.sap.adds_service.adds.domain.AddFilter;
 import com.sap.adds_service.adds.domain.Add;
 import org.springframework.data.domain.Page;
 

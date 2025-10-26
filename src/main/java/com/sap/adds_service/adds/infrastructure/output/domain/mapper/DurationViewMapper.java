@@ -1,6 +1,6 @@
 package com.sap.adds_service.adds.infrastructure.output.domain.mapper;
 
-import com.sap.adds_service.adds.domain.DurationView;
+import com.sap.adds_service.adds.domain.dtos.DurationView;
 import com.sap.adds_service.duration.domain.Duration;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

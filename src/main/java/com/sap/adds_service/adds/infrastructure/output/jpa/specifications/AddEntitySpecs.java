@@ -1,6 +1,6 @@
 package com.sap.adds_service.adds.infrastructure.output.jpa.specifications;
 
-import com.sap.adds_service.adds.application.usecases.findadd.dtos.AddFilter;
+import com.sap.adds_service.adds.domain.AddFilter;
 import com.sap.adds_service.adds.domain.AddType;
 import com.sap.adds_service.adds.domain.PaymentState;
 import com.sap.adds_service.adds.infrastructure.output.jpa.entity.AddEntity;
@@ -14,8 +14,9 @@ public class AddEntitySpecs {
                 eqActive(f.active()),
                 eqCinema(f.cinemaId()),
                 eqUser(f.userId()),
-                eqPaymentState(f.paymentState())
-
+                eqPaymentState(f.paymentState()),
+                maxPaymentDate(f.maxPaymentDate()),
+                minPaymentDate(f.minPaymentDate())
         );
     }
 
@@ -37,5 +38,13 @@ public class AddEntitySpecs {
 
     private static Specification<AddEntity> eqUser(UUID userId) {
         return (root, q, cb) -> userId == null ? null : cb.equal(root.get("userId"), userId);
+    }
+
+    private static Specification<AddEntity> maxPaymentDate(java.time.LocalDateTime maxPaymentDate) {
+        return (root, q, cb) -> maxPaymentDate == null ? null : cb.lessThanOrEqualTo(root.get("paidAt"), maxPaymentDate);
+    }
+
+    private static Specification<AddEntity> minPaymentDate(java.time.LocalDateTime minPaymentDate) {
+        return (root, q, cb) -> minPaymentDate == null ? null : cb.greaterThanOrEqualTo(root.get("paidAt"), minPaymentDate);
     }
 }

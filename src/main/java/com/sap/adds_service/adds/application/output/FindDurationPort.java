@@ -1,6 +1,6 @@
 package com.sap.adds_service.adds.application.output;
 
-import com.sap.adds_service.adds.domain.DurationView;
+import com.sap.adds_service.adds.domain.dtos.DurationView;
 
 import java.util.Optional;
 import java.util.UUID;

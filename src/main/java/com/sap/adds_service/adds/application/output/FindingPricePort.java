@@ -1,6 +1,6 @@
 package com.sap.adds_service.adds.application.output;
 
-import com.sap.adds_service.adds.domain.PriceView;
+import com.sap.adds_service.adds.domain.dtos.PriceView;
 
 import java.util.Optional;
 import java.util.UUID;

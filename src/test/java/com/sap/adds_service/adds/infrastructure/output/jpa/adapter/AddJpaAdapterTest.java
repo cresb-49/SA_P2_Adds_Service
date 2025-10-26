@@ -1,6 +1,6 @@
 package com.sap.adds_service.adds.infrastructure.output.jpa.adapter;
 
-import com.sap.adds_service.adds.application.usecases.findadd.dtos.AddFilter;
+import com.sap.adds_service.adds.domain.AddFilter;
 import com.sap.adds_service.adds.domain.Add;
 import com.sap.adds_service.adds.domain.AddType;
 import com.sap.adds_service.adds.domain.PaymentState;
@@ -174,7 +174,7 @@ class AddJpaAdapterTest {
     @Test
     void findByFilers_shouldMapSpecificationResults() {
         // Arrange
-        AddFilter filter = new AddFilter(AddType.TEXT_BANNER, PaymentState.PENDING, true, CINEMA_ID, USER_ID);
+        AddFilter filter = new AddFilter(AddType.TEXT_BANNER, PaymentState.PENDING, true, CINEMA_ID, USER_ID, null, null);
         when(addEntityRepository.findAll(any(Specification.class), eq(PageRequest.of(0, 20, Sort.by(Sort.Direction.DESC, "createdAt")))))
                 .thenReturn(entityPage);
         when(addMapper.toDomain(entity)).thenReturn(domain);

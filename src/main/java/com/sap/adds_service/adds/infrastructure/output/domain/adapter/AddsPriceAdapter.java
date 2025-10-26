@@ -1,7 +1,7 @@
 package com.sap.adds_service.adds.infrastructure.output.domain.adapter;
 
 import com.sap.adds_service.adds.application.output.FindingPricePort;
-import com.sap.adds_service.adds.domain.PriceView;
+import com.sap.adds_service.adds.domain.dtos.PriceView;
 import com.sap.adds_service.adds.infrastructure.output.domain.mapper.PriceViewMapper;
 import com.sap.adds_service.prices.infrastructure.input.domain.port.PriceGatewayPort;
 import lombok.AllArgsConstructor;

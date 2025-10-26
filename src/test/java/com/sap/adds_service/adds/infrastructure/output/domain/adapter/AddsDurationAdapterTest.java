@@ -2,7 +2,7 @@
 
 package com.sap.adds_service.adds.infrastructure.output.domain.adapter;
 
-import com.sap.adds_service.adds.domain.DurationView;
+import com.sap.adds_service.adds.domain.dtos.DurationView;
 import com.sap.adds_service.adds.infrastructure.output.domain.mapper.DurationViewMapper;
 import com.sap.adds_service.duration.domain.Duration;
 import com.sap.adds_service.duration.infrastructure.input.domain.port.DurationGatewayPort;

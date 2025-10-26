@@ -4,7 +4,7 @@ import com.sap.adds_service.adds.application.output.DeletingAddPort;
 import com.sap.adds_service.adds.application.output.FindPurchasedAdds;
 import com.sap.adds_service.adds.application.output.FindingAddPort;
 import com.sap.adds_service.adds.application.output.SaveAddPort;
-import com.sap.adds_service.adds.application.usecases.findadd.dtos.AddFilter;
+import com.sap.adds_service.adds.domain.AddFilter;
 import com.sap.adds_service.adds.domain.Add;
 import com.sap.adds_service.adds.domain.AddType;
 import com.sap.adds_service.adds.infrastructure.output.jpa.mapper.AddMapper;
@@ -86,6 +86,13 @@ public class AddJpaAdapter implements FindingAddPort, SaveAddPort, DeletingAddPo
     @Override
     public List<Add> findByIds(List<UUID> ids) {
         return addEntityRepository.findByIdIn(ids).stream().map(addMapper::toDomain).toList();
+    }
+
+    @Override
+    public List<Add> findByFilers(AddFilter filter) {
+        var spec = AddEntitySpecs.byFilter(filter);
+        var entities = addEntityRepository.findAll(spec);
+        return entities.stream().map(addMapper::toDomain).toList();
     }
 
     @Override

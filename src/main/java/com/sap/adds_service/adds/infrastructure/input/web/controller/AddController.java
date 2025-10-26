@@ -5,6 +5,7 @@ import com.sap.adds_service.adds.domain.AddType;
 import com.sap.adds_service.adds.domain.PaymentState;
 import com.sap.adds_service.adds.infrastructure.input.web.dtos.AddFilterRequestDTO;
 import com.sap.adds_service.adds.infrastructure.input.web.dtos.CreateAddRequestDTO;
+import com.sap.adds_service.adds.infrastructure.input.web.dtos.GananciasAnuncianteReportResponseDTO;
 import com.sap.adds_service.adds.infrastructure.input.web.dtos.UpdateAddRequestDTO;
 import com.sap.adds_service.adds.infrastructure.input.web.mappers.AddResponseMapper;
 import com.sap.common_lib.dto.response.RestApiErrorDTO;
@@ -53,6 +54,7 @@ public class AddController {
     private final UpdateAddPort updateAddPort;
     private final RetryPaidAddCasePort retryPaidAddCasePort;
     private final BuyAddsReportCasePort buyAddsReportCasePort;
+    private final ReporteGananciasAnuncianteCasePort reporteGananciasAnuncianteCasePort;
     // Mapper
     private final AddResponseMapper addResponseMapper;
 
@@ -85,9 +87,11 @@ public class AddController {
             @RequestParam(required = false) Boolean active,
             @RequestParam(required = false) UUID cinemaId,
             @RequestParam(required = false) UUID userId,
+            @RequestParam(required = false) LocalDateTime from,
+            @RequestParam(required = false) LocalDateTime to,
             @RequestParam(defaultValue = "0") int page
     ) {
-        var filter = new AddFilterRequestDTO(type, paymentState, active, cinemaId, userId);
+        var filter = new AddFilterRequestDTO(type, paymentState, active, cinemaId, userId, from, to);
         var result = findAddPort.findByFilters(filter.toDomain(), page);
         return ResponseEntity.ok(addResponseMapper.toResponsePage(result));
     }
@@ -427,11 +431,55 @@ public class AddController {
                 to,
                 addType,
                 periodFrom,
-                periodTo,
-                "PDF"
+                periodTo
+        );
+        String filename = "ads_purchased_report_%s_to_%s_ts_%s.pdf".formatted(
+                from.toString(),
+                to.toString(),
+                String.valueOf(System.currentTimeMillis())
         );
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=ads_purchased_report.pdf")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
+    }
+
+
+    @PostMapping("/report/ganancias-anunciante")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> gananciasAnunciante(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            @RequestParam(required = false) UUID userId
+    ) {
+        var result = reporteGananciasAnuncianteCasePort.reporteGananciasAnunciante(
+                from,
+                to,
+                userId
+        );
+        return ResponseEntity.ok(GananciasAnuncianteReportResponseDTO.fromDomain(result));
+    }
+
+
+    @PostMapping("/report/ganancias-anunciante/pdf")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<byte[]> generarReporteGananciasAnunciantePdf(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            @RequestParam(required = false) UUID userId
+    ) {
+        var pdf = reporteGananciasAnuncianteCasePort.generarReporteGananciasAnunciante(
+                from,
+                to,
+                userId
+        );
+        String filename = "ganancias_anunciante_report_%s_to_%s_ts_%s.pdf".formatted(
+                from.toString(),
+                to.toString(),
+                String.valueOf(System.currentTimeMillis())
+        );
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
     }

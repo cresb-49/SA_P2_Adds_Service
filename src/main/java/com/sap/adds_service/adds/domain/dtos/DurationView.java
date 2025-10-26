@@ -1,4 +1,4 @@
-package com.sap.adds_service.adds.domain;
+package com.sap.adds_service.adds.domain.dtos;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

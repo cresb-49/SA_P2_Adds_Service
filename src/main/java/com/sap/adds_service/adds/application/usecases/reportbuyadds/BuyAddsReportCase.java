@@ -52,8 +52,7 @@ public class BuyAddsReportCase implements BuyAddsReportCasePort {
             LocalDateTime to,
             String addType,
             LocalDate periodFrom,
-            LocalDate periodTo,
-            String fileType
+            LocalDate periodTo
     ) {
         var data = report(from, to, addType, periodFrom, periodTo);
         var params = new HashMap<String, Object>();

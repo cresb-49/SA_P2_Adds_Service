@@ -1,7 +1,7 @@
 package com.sap.adds_service.adds.application.output;
 
-import com.sap.adds_service.adds.application.usecases.findadd.dtos.AddFilter;
 import com.sap.adds_service.adds.domain.Add;
+import com.sap.adds_service.adds.domain.AddFilter;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
@@ -23,6 +23,8 @@ public interface FindingAddPort {
     Page<Add> findByUserId(UUID userId, int page);
 
     List<Add> findByIds(List<UUID> ids);
+
+    List<Add> findByFilers(AddFilter filter);
 
     Page<Add> findByFilers(AddFilter filter, int page);
 

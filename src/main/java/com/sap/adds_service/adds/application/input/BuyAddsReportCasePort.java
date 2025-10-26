@@ -20,7 +20,6 @@ public interface BuyAddsReportCasePort {
             LocalDateTime to,
             String addType,
             LocalDate periodFrom,
-            LocalDate periodTo,
-            String fileType
+            LocalDate periodTo
     );
 }

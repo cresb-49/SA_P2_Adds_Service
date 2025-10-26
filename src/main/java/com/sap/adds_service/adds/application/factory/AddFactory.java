@@ -40,4 +40,20 @@ public class AddFactory {
         }
         return adds;
     }
+
+    public Add withUser(Add add) {
+        var user = findUserPort.findById(add.getUserId());
+        add.setUser(user);
+        return add;
+    }
+
+    public List<Add> withUser(List<Add> adds) {
+        var userIds = adds.stream().map(Add::getUserId).distinct().toList();
+        var users = findUserPort.findByIds(userIds);
+        var userMap = users.stream().collect(java.util.stream.Collectors.toMap(UserView::id, u -> u));
+        for (var add : adds) {
+            add.setUser(userMap.get(add.getUserId()));
+        }
+        return adds;
+    }
 }

@@ -1,6 +1,6 @@
 package com.sap.adds_service.adds.infrastructure.output.domain.mapper;
 
-import com.sap.adds_service.adds.domain.PriceView;
+import com.sap.adds_service.adds.domain.dtos.PriceView;
 import com.sap.adds_service.prices.domain.Price;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

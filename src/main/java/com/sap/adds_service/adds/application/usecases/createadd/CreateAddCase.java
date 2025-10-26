@@ -5,7 +5,7 @@ import com.sap.adds_service.adds.application.output.*;
 import com.sap.adds_service.adds.application.usecases.createadd.dtos.CreateAddDTO;
 import com.sap.adds_service.adds.domain.Add;
 import com.sap.adds_service.adds.domain.AddType;
-import com.sap.adds_service.adds.domain.PriceView;
+import com.sap.adds_service.adds.domain.dtos.PriceView;
 import com.sap.common_lib.exception.NotFoundException;
 import com.sap.common_lib.util.ContentTypeUtils;
 import com.sap.common_lib.util.DetectMineTypeResourceUtil;

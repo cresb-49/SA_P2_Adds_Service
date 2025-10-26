@@ -2,7 +2,7 @@ package com.sap.adds_service.adds.application.usecases.findadd;
 
 import com.sap.adds_service.adds.application.input.FindAddPort;
 import com.sap.adds_service.adds.application.output.FindingAddPort;
-import com.sap.adds_service.adds.application.usecases.findadd.dtos.AddFilter;
+import com.sap.adds_service.adds.domain.AddFilter;
 import com.sap.adds_service.adds.domain.Add;
 import com.sap.common_lib.exception.NotFoundException;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,6 @@
 package com.sap.adds_service.adds.infrastructure.output.jpa.specifications;
 
-import com.sap.adds_service.adds.application.usecases.findadd.dtos.AddFilter;
+import com.sap.adds_service.adds.domain.AddFilter;
 import com.sap.adds_service.adds.domain.AddType;
 import com.sap.adds_service.adds.domain.PaymentState;
 import com.sap.adds_service.adds.infrastructure.output.jpa.entity.AddEntity;
@@ -30,7 +30,7 @@ class AddEntitySpecsTest {
     @Test
     void byFilter_allNull_returnsNullPredicate() {
         // Arrange
-        AddFilter filter = new AddFilter(null, null, null, null, null);
+        AddFilter filter = new AddFilter(null, null, null, null, null, null, null);
         Specification<AddEntity> spec = AddEntitySpecs.byFilter(filter);
         Root<AddEntity> root = mock(Root.class);
         CriteriaQuery<?> cq = mock(CriteriaQuery.class);
@@ -45,7 +45,7 @@ class AddEntitySpecsTest {
     @Test
     void byFilter_onlyType_buildsEqualOnType() {
         // Arrange
-        AddFilter filter = new AddFilter(AddType.TEXT_BANNER, null, null, null, null);
+        AddFilter filter = new AddFilter(AddType.TEXT_BANNER, null, null, null, null, null, null);
         Specification<AddEntity> spec = AddEntitySpecs.byFilter(filter);
         Root<AddEntity> root = mock(Root.class);
         CriteriaQuery<?> cq = mock(CriteriaQuery.class);
@@ -65,7 +65,7 @@ class AddEntitySpecsTest {
     @Test
     void byFilter_onlyActive_buildsEqualOnActive() {
         // Arrange
-        AddFilter filter = new AddFilter(null, null, true, null, null);
+        AddFilter filter = new AddFilter(null, null, true, null, null, null, null);
         Specification<AddEntity> spec = AddEntitySpecs.byFilter(filter);
         Root<AddEntity> root = mock(Root.class);
         CriteriaQuery<?> cq = mock(CriteriaQuery.class);
@@ -85,7 +85,7 @@ class AddEntitySpecsTest {
     @Test
     void byFilter_onlyCinema_buildsEqualOnCinemaId() {
         // Arrange
-        AddFilter filter = new AddFilter(null, null, null, CINEMA_ID, null);
+        AddFilter filter = new AddFilter(null, null, null, CINEMA_ID, null, null, null);
         Specification<AddEntity> spec = AddEntitySpecs.byFilter(filter);
         Root<AddEntity> root = mock(Root.class);
         CriteriaQuery<?> cq = mock(CriteriaQuery.class);
@@ -105,7 +105,7 @@ class AddEntitySpecsTest {
     @Test
     void byFilter_onlyUser_buildsEqualOnUserId() {
         // Arrange
-        AddFilter filter = new AddFilter(null, null, null, null, USER_ID);
+        AddFilter filter = new AddFilter(null, null, null, null, USER_ID, null, null);
         Specification<AddEntity> spec = AddEntitySpecs.byFilter(filter);
         Root<AddEntity> root = mock(Root.class);
         CriteriaQuery<?> cq = mock(CriteriaQuery.class);
@@ -125,7 +125,7 @@ class AddEntitySpecsTest {
     @Test
     void byFilter_onlyPaymentState_buildsEqualOnPaymentState() {
         // Arrange
-        AddFilter filter = new AddFilter(null, PaymentState.COMPLETED, null, null, null);
+        AddFilter filter = new AddFilter(null, PaymentState.COMPLETED, null, null, null, null, null);
         Specification<AddEntity> spec = AddEntitySpecs.byFilter(filter);
         Root<AddEntity> root = mock(Root.class);
         CriteriaQuery<?> cq = mock(CriteriaQuery.class);
@@ -145,7 +145,7 @@ class AddEntitySpecsTest {
     @Test
     void byFilter_allFields_buildsEqualsForEach() {
         // Arrange
-        AddFilter filter = new AddFilter(AddType.MEDIA_HORIZONTAL, PaymentState.PENDING, false, CINEMA_ID, USER_ID);
+        AddFilter filter = new AddFilter(AddType.MEDIA_HORIZONTAL, PaymentState.PENDING, false, CINEMA_ID, USER_ID, null, null);
         Specification<AddEntity> spec = AddEntitySpecs.byFilter(filter);
         Root<AddEntity> root = mock(Root.class);
         CriteriaQuery<?> cq = mock(CriteriaQuery.class);
