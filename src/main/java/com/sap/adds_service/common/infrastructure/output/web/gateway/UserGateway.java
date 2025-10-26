@@ -7,6 +7,8 @@ import com.sap.common_lib.dto.response.users.user.UserResponseDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,20 +22,21 @@ public class UserGateway implements UserGatewayPort {
 
     @Override
     public boolean existsById(UUID userId) {
-        var userView = webClient.build()
-                .get()
-                .uri(USER_SERVICE_URL + "/id/" + userId)
-                .retrieve()
-                .bodyToMono(UserResponseDTO.class)
-                .block();
-        return userView != null;
+        boolean exists = Boolean.TRUE.equals(webClient.build()
+                .head()
+                .uri(USER_SERVICE_URL + "/{id}", userId)
+                .exchangeToMono(resp -> Mono.just(resp.statusCode().is2xxSuccessful()))
+                .onErrorReturn(WebClientResponseException.NotFound.class, false)
+                .onErrorReturn(WebClientResponseException.class, false)
+                .block());
+        return exists;
     }
 
     @Override
     public UserResponseDTO findById(UUID id) {
         return webClient.build()
                 .get()
-                .uri(USER_SERVICE_URL + "/id/" + id)
+                .uri(USER_SERVICE_URL + "/" + id)
                 .retrieve()
                 .bodyToMono(UserResponseDTO.class)
                 .block();
