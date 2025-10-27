@@ -2,7 +2,6 @@ package com.sap.adds_service.adds.domain;
 
 import com.sap.adds_service.adds.domain.dtos.CinemaView;
 import com.sap.adds_service.adds.domain.dtos.UserView;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -108,6 +107,19 @@ public class Add {
         this.createdAt = LocalDateTime.now();
         this.addExpiration = durationDays > 0 ? this.createdAt.plusDays(durationDays) : null;
         this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * Get the full name of the user associated with the Add entity.
+     *
+     * @return Full name of the user or email if name is not available.
+     */
+    public String getUserFullName() {
+        if (user == null) return "";
+        var fn = user.firstName() == null ? "" : user.firstName().trim();
+        var ln = user.lastName() == null ? "" : user.lastName().trim();
+        var full = (fn + " " + ln).trim();
+        return full.isEmpty() ? (user.email() == null ? "" : user.email()) : full;
     }
 
     /**

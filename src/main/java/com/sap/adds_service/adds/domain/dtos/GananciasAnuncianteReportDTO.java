@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public record GananciasAnuncianteReportDTO(
-        List<Add> adds,
+        List<AddGananciasAnuncianteReportLineDTO> adds,
         BigDecimal totalGanancias
 ) {
 }

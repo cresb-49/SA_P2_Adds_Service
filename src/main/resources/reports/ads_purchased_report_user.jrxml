@@ -8,6 +8,8 @@
     <!-- ====== Parameters ====== -->
     <parameter name="from" class="java.time.LocalDateTime"/>
     <parameter name="to" class="java.time.LocalDateTime"/>
+    <parameter name="firstUserName" class="java.lang.String"/>
+    <parameter name="userId" class="java.util.UUID"/>
 
     <!-- ====== Fields (desde Add) ====== -->
     <field name="id" class="java.util.UUID"/>
@@ -15,24 +17,13 @@
     <field name="price" class="java.math.BigDecimal"/>
     <field name="paidAt" class="java.time.LocalDateTime"/>
     <field name="addExpiration" class="java.time.LocalDateTime"/>
-    <field name="content" class="java.lang.String"/>
-    <field name="description" class="java.lang.String"/>
     <!-- Solo usuario -->
-    <field name="user.firstName" class="java.lang.String"/>
-    <field name="user.lastName" class="java.lang.String"/>
-    <field name="user.email" class="java.lang.String"/>
-    <field name="userId" class="java.util.UUID"/>
+    <field name="userFullName" class="java.lang.String"/>
 
     <!-- ====== Variables ====== -->
-    <variable name="firstUserName" class="java.lang.String" calculation="System" resetType="Report">
+    <variable name="firstUserName" class="java.lang.String" calculation="Nothing" resetType="Report">
         <initialValueExpression><![CDATA[""]]></initialValueExpression>
-        <expression><![CDATA[
-$V{REPORT_COUNT} == 1 ? (
-  $F{userId} == null ? "" :
-    (( $F{user.firstName} == null ? "" : $F{user.firstName}) + " " +
-     ( $F{user.lastName}  == null ? "" : $F{user.lastName}))
-) : $V{firstUserName}
-]]></expression>
+        <expression><![CDATA[$P{firstUserName}]]></expression>
     </variable>
     <variable name="totalEarnings" class="java.math.BigDecimal" calculation="Sum">
         <expression><![CDATA[$F{price}]]></expression>
@@ -50,8 +41,8 @@ $V{REPORT_COUNT} == 1 ? (
             ]]></expression>
         </element>
         <element kind="textField" uuid="7b9d4a74-1c47-4d02-8b5a-3a4c1a1d0b7f" x="0" y="65" width="515" height="15" fontSize="9.0" italic="true" hTextAlign="Center">
-            <printWhenExpression><![CDATA[$V{firstUserName} != null && !$V{firstUserName}.isEmpty()]]></printWhenExpression>
-            <expression><![CDATA["Usuario: " + $V{firstUserName}]]></expression>
+            <printWhenExpression><![CDATA[$P{firstUserName} != null && !$P{firstUserName}.isEmpty()]]></printWhenExpression>
+            <expression><![CDATA["Usuario: " + $P{firstUserName}]]></expression>
         </element>
     </title>
 
@@ -82,9 +73,8 @@ $V{REPORT_COUNT} == 1 ? (
             </element>
             <element kind="textField" uuid="bbccddee-ff00-1122-3344-5566778899aa" x="90" y="0" width="170" height="15" fontSize="8.0" textAdjust="ScaleFont" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
                 <expression><![CDATA[
-                    ($F{user.firstName} == null ? "" : $F{user.firstName}) + " " +
-                    ($F{user.lastName} == null ? "" : $F{user.lastName})
-                ]]></expression>
+$F{userFullName} == null ? "" : $F{userFullName}
+]]></expression>
             </element>
             <element kind="textField" uuid="ccddeeff-0011-2233-4455-66778899aabb" x="260" y="0" width="80" height="15" fontSize="8.0" hTextAlign="Center" vTextAlign="Middle" pattern="#,##0.00">
                 <expression><![CDATA[$F{price}]]></expression>

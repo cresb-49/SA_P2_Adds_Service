@@ -5,6 +5,7 @@ import com.sap.adds_service.adds.application.input.ReporteGananciasAnuncianteCas
 import com.sap.adds_service.adds.application.output.FindingAddPort;
 import com.sap.adds_service.adds.domain.Add;
 import com.sap.adds_service.adds.domain.AddFilter;
+import com.sap.adds_service.adds.domain.dtos.AddGananciasAnuncianteReportLineDTO;
 import com.sap.adds_service.adds.domain.dtos.GananciasAnuncianteReportDTO;
 import com.sap.adds_service.common.infrastructure.output.jasper.port.JasperReportServicePort;
 import lombok.AllArgsConstructor;
@@ -51,7 +52,10 @@ public class ReporteGananciasAnuncianteCase implements ReporteGananciasAnunciant
                 .map(Add::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         // Retornar el DTO con los anuncios y las ganancias
-        return new GananciasAnuncianteReportDTO(addsWithUser, ganancias);
+        var linesReport = addsWithUser.stream()
+                .map(add -> new AddGananciasAnuncianteReportLineDTO(add))
+                .toList();
+        return new GananciasAnuncianteReportDTO(linesReport, ganancias);
     }
 
     @Override
@@ -61,8 +65,10 @@ public class ReporteGananciasAnuncianteCase implements ReporteGananciasAnunciant
         var params = new HashMap<String, Object>();
         params.put("from", from.atStartOfDay());
         params.put("to", to.atTime(23, 59, 59));
-        if (userId != null) {
-            params.put("userId", userId);
+        if (userId != null && !reporte.adds().isEmpty()) {
+            var firstAdd = reporte.adds().getFirst();
+            params.put("userId", firstAdd.getId());
+            params.put("userFullName", firstAdd.getUserFullName());
         }
         return jasperReportService.toPdf(
                 REPORT_TEMPLATE,
