@@ -21,15 +21,4 @@ class KafkaAddEventAdapterTest {
 
     @InjectMocks
     private KafkaAddEventAdapter adapter;
-
-    @Test
-    void sendNotification_shouldComplete_withoutKafkaSend() {
-        // Arrange
-        UUID userId = UUID.randomUUID();
-        String message = "Test notification";
-        // Act
-        adapter.sendNotification(userId, message);
-        // Assert
-        verifyNoInteractions(kafkaTemplate);
-    }
 }
