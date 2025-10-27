@@ -123,6 +123,16 @@ public class Add {
     }
 
     /**
+     * Get the name of the cinema associated with the Add entity.
+     *
+     * @return Name of the cinema or empty string if not available.
+     */
+    public String getCinemaName() {
+        if (cinema == null) return "";
+        return cinema.name() == null ? "" : cinema.name();
+    }
+
+    /**
      * Toggle the active status of the Add entity.
      */
     public void changeActive() {
