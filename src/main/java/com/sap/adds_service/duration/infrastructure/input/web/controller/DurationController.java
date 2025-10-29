@@ -59,7 +59,6 @@ public class DurationController {
             @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
     })
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> findDurationById(@PathVariable UUID id) {
         var duration = findDurationCasePort.findById(id);
         var response = durationResponseMapper.toResponseDTO(duration);
@@ -88,7 +87,6 @@ public class DurationController {
             @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
     })
     @GetMapping("/all")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> findAllDurations() {
         var durations = findDurationCasePort.findAll();
         var response = durationResponseMapper.toResponseDTOList(durations);
