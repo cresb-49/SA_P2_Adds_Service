@@ -161,7 +161,7 @@ public class PriceController {
             @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
     })
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN')")
     public ResponseEntity<?> updatePrices(
             @PathVariable UUID id,
             @RequestBody UpdatePriceRequestDTO request
