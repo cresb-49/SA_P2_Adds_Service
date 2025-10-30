@@ -32,7 +32,7 @@ public class RetryPaidAddCase implements RetryPaidAddCasePort {
         // Save add
         var savedAdd = saveAddPort.save(add);
         //Send payment event
-        sendNotificationAddPayment.sendPaymentEvent(savedAdd.getId(), savedAdd.getUserId(), savedAdd.getPrice());
+        sendNotificationAddPayment.sendPaymentEvent(savedAdd.getId(), savedAdd.getUserId(), savedAdd.getCinemaId(), savedAdd.getPrice());
         //Send notification event
         sendNotificationPort.sendNotification(savedAdd.getUserId(), "Se ha reintentado el pago del anuncio con ID: " + savedAdd.getId());
     }

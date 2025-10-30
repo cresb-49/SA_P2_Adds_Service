@@ -4,5 +4,5 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 public interface SendNotificationAddPayment {
-    void sendPaymentEvent(UUID addId, UUID userId, BigDecimal amount);
+    void sendPaymentEvent(UUID addId, UUID userId, UUID cinemaId, BigDecimal amount);
 }

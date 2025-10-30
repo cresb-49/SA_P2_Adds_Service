@@ -20,10 +20,11 @@ public class KafkaAddEventAdapter implements SendNotificationPort, SendNotificat
     private final KafkaTemplate<String, SendGenericMailEventDTO> sendGenericMailEventDTOKafkaTemplate;
 
     @Override
-    public void sendPaymentEvent(UUID addId, UUID userId, BigDecimal amount) {
+    public void sendPaymentEvent(UUID addId, UUID userId, UUID cinemaId, BigDecimal amount) {
         var eventDTO = new AddPendingPaymentEventDTO(
                 addId,
                 userId,
+                cinemaId,
                 amount
         );
         pendingPaymentEventDTOKafkaTemplate.send(TopicConstants.ADDS_PENDING_PAYMENT_TOPIC, addId.toString(), eventDTO);

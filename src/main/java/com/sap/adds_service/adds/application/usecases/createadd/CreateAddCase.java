@@ -103,7 +103,7 @@ public class CreateAddCase implements CreateAddPort {
         // Save add
         var savedAdd = saveAddPort.save(add);
         // Send Payment Event
-        sendNotificationAddPayment.sendPaymentEvent(savedAdd.getId(), savedAdd.getUserId(), savedAdd.getPrice());
+        sendNotificationAddPayment.sendPaymentEvent(savedAdd.getId(), savedAdd.getUserId(), savedAdd.getCinemaId(), savedAdd.getPrice());
         // Send Notification Event
         sendNotificationPort.sendNotification(savedAdd.getUserId(),"Su anuncio ha sido creado y está pendiente de pago.");
         return savedAdd;
