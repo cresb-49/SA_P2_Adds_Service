@@ -74,7 +74,7 @@ class RetryPaidAddCaseTest {
         verify(findingAddPort, times(1)).findById(ADD_ID);
         verify(sendNotificationPort, times(1)).sendNotification(any(), any());
         verify(saveAddPort, times(1)).save(add);
-        verify(sendNotificationAddPayment, times(1)).sendPaymentEvent(any(), any(), any());
+        verify(sendNotificationAddPayment, times(1)).sendPaymentEvent(any(), any(), any(), any());
         org.assertj.core.api.Assertions.assertThat(add.getPaymentState()).isEqualTo(PaymentState.PENDING);
         org.assertj.core.api.Assertions.assertThat(add.isActive()).isFalse();
     }
