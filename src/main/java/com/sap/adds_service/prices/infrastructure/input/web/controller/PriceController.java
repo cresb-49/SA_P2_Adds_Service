@@ -49,7 +49,7 @@ public class PriceController {
             @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
     })
     @PostMapping("/cinema/{cinemaId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN')")
     public ResponseEntity<?> createPrices(
             @PathVariable UUID cinemaId
     ) {
@@ -67,7 +67,7 @@ public class PriceController {
             @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
     })
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN')")
     public ResponseEntity<?> deletePrices(
             @PathVariable UUID id
     ) {
@@ -85,7 +85,7 @@ public class PriceController {
             @ApiResponse(responseCode = "500", description = "Error interno", content = @Content(schema = @Schema(implementation = RestApiErrorDTO.class)))
     })
     @DeleteMapping("/cinema/{cinemaId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('CINEMA_ADMIN')")
     public ResponseEntity<?> deletePricesByCinemaId(
             @PathVariable UUID cinemaId
     ) {
