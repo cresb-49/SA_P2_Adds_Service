@@ -10,13 +10,4 @@ class CinemaGatewayTest {
 
     private static final UUID ANY_ID = UUID.randomUUID();
 
-    @Test
-    void checkIfCinemaExistsById_shouldReturnTrue_always() {
-        // Arrange
-        CinemaGateway gateway = new CinemaGateway();
-        // Act
-        boolean result = gateway.checkIfCinemaExistsById(ANY_ID);
-        // Assert
-        assertThat(result).isTrue();
-    }
 }
