@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -172,6 +173,22 @@ class AddJpaAdapterTest {
     }
 
     @Test
+    void findByFilers_shouldReturnMappedList() {
+        // Arrange
+        var filter = AddFilter.builder()
+                .type(AddType.MEDIA_VERTICAL)
+                .build();
+        when(addEntityRepository.findAll(any(Specification.class))).thenReturn(List.of(entity));
+        when(addMapper.toDomain(entity)).thenReturn(domain);
+
+        // Act
+        List<Add> result = adapter.findByFilers(filter);
+
+        // Assert
+        assertThat(result).contains(domain);
+    }
+
+    @Test
     void findByFilers_shouldMapSpecificationResults() {
         // Arrange
         AddFilter filter = new AddFilter(AddType.TEXT_BANNER, PaymentState.PENDING, true, CINEMA_ID, USER_ID, null, null);
@@ -229,6 +246,20 @@ class AddJpaAdapterTest {
     }
 
     @Test
+    void findAddRandomByTypeAndCinemaIdAndNow_shouldReturnEmpty_whenNotFound() {
+        // Arrange
+        LocalDateTime now = LocalDateTime.now();
+        when(addEntityRepository.findRandomValidByTypeCinemaPaymentStateAndNow("MEDIA_VERTICAL", CINEMA_ID, "COMPLETED", now))
+                .thenReturn(Optional.empty());
+
+        // Act
+        Optional<Add> result = adapter.findAddRandomByTypeAndCinemaIdAndNow("MEDIA_VERTICAL", CINEMA_ID, "COMPLETED", now);
+
+        // Assert
+        assertThat(result).isEmpty();
+    }
+
+    @Test
     void save_shouldMapAndReturnSavedAdd() {
         // Arrange
         when(addMapper.toEntity(domain)).thenReturn(entity);
@@ -240,5 +271,23 @@ class AddJpaAdapterTest {
 
         // Assert
         assertThat(result).isEqualTo(domain);
+    }
+
+    @Test
+    void findPurchasedAdds_shouldReturnMappedAdds() {
+        // Arrange
+        var from = LocalDateTime.now().minusDays(1);
+        var to = LocalDateTime.now();
+        var periodFrom = LocalDate.now().minusDays(2);
+        var periodTo = LocalDate.now().plusDays(2);
+        when(addEntityRepository.findPurchasedAdds(from, to, "MEDIA_VERTICAL", periodFrom, periodTo, "COMPLETED"))
+                .thenReturn(List.of(entity));
+        when(addMapper.toDomain(entity)).thenReturn(domain);
+
+        // Act
+        List<Add> result = adapter.findPurchasedAdds(from, to, "MEDIA_VERTICAL", periodFrom, periodTo, "COMPLETED");
+
+        // Assert
+        assertThat(result).containsExactly(domain);
     }
 }
