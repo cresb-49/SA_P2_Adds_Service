@@ -9,6 +9,20 @@ pipeline {
     }
 
     stages {
+
+        stage('Stop microservice'){
+            steps {
+                sh '''#!/bin/bash
+                set -euo pipefail
+                SERVICE=adds-service.service
+                echo "🛑 Deteniendo servicio..."
+                echo "⏹️  $SERVICE"
+                sudo systemctl stop "$SERVICE"
+                echo "✅ Detenido."
+                '''
+            }
+        }
+
         stage('Compile') {
             steps {
                 sh 'mvn -B compile'
@@ -66,6 +80,19 @@ pipeline {
                         mv \"\${tmp_file}\" ${DEST_DIR}/${FINAL_JAR_NAME}
                     """
                 }
+            }
+        }
+
+        stage('Start microservice'){
+            steps {
+                sh '''#!/bin/bash
+                set -euo pipefail
+                SERVICE=adds-service.service
+                echo "▶️ Iniciando servicio..."
+                echo "▶️  $SERVICE"
+                sudo systemctl start "$SERVICE"
+                echo "✅ Iniciado."
+                '''
             }
         }
     }
