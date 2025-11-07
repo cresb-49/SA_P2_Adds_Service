@@ -73,7 +73,7 @@ class BuyAddsReportCaseTest {
                 .thenReturn(rawAdds);
         when(addFactory.withCinemaAndUser(rawAdds)).thenReturn(rawAdds);
         byte[] pdf = "bytes".getBytes();
-        when(jasperReportService.toPdf(any(), any(), any())).thenReturn(pdf);
+        when(jasperReportService.toPdfCompiled(any(), any(), any())).thenReturn(pdf);
 
         var result = useCase.generateReportFile(FROM, TO, "MEDIA_VERTICAL", PERIOD_FROM, PERIOD_TO);
 
@@ -83,7 +83,7 @@ class BuyAddsReportCaseTest {
         @SuppressWarnings("unchecked")
         ArgumentCaptor<List<Map<String, Object>>> dataCaptor = ArgumentCaptor.forClass(List.class);
         ArgumentCaptor<HashMap<String, Object>> paramsCaptor = ArgumentCaptor.forClass(HashMap.class);
-        verify(jasperReportService).toPdf(templateCaptor.capture(), dataCaptor.capture(), paramsCaptor.capture());
+        verify(jasperReportService).toPdfCompiled(templateCaptor.capture(), dataCaptor.capture(), paramsCaptor.capture());
 
         assertThat(templateCaptor.getValue()).isEqualTo("ads_purchased_report");
         var rows = dataCaptor.getValue();

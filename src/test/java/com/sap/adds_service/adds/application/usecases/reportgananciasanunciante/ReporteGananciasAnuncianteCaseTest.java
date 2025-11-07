@@ -109,7 +109,7 @@ class ReporteGananciasAnuncianteCaseTest {
     void generarReporteGananciasAnunciante_shouldSendReportDataToJasper() {
         stubAddsWithUsers();
         byte[] expectedPdf = "pdf".getBytes();
-        when(jasperReportService.toPdf(any(), any(), any())).thenReturn(expectedPdf);
+        when(jasperReportService.toPdfCompiled(any(), any(), any())).thenReturn(expectedPdf);
 
         var result = useCase.generarReporteGananciasAnunciante(FROM, TO, USER_ID);
 
@@ -119,7 +119,7 @@ class ReporteGananciasAnuncianteCaseTest {
         ArgumentCaptor<List<Map<String, Object>>> dataCaptor = ArgumentCaptor.forClass(List.class);
         ArgumentCaptor<Map<String, Object>> paramsCaptor = ArgumentCaptor.forClass(Map.class);
 
-        verify(jasperReportService).toPdf(templateCaptor.capture(), dataCaptor.capture(), paramsCaptor.capture());
+        verify(jasperReportService).toPdfCompiled(templateCaptor.capture(), dataCaptor.capture(), paramsCaptor.capture());
 
         assertThat(templateCaptor.getValue()).isEqualTo("ads_purchased_report_user");
 

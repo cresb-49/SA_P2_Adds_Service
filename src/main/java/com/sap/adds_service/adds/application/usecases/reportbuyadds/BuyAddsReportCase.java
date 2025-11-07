@@ -66,7 +66,7 @@ public class BuyAddsReportCase implements BuyAddsReportCasePort {
         params.put("periodFrom", periodFrom);
         params.put("periodTo", periodTo);
         var flatData = toFlatRows(data);
-        return jasperReportService.toPdf(REPORT_TEMPLATE, flatData, params);
+        return jasperReportService.toPdfCompiled(REPORT_TEMPLATE, flatData, params);
     }
 
     private List<Map<String, Object>> toFlatRows(List<Add> adds) {

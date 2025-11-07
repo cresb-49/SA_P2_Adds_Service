@@ -74,7 +74,7 @@ public class ReporteGananciasAnuncianteCase implements ReporteGananciasAnunciant
             params.put("userFullName", reporte.adds().getFirst().getUserFullName());
         }
         var flatData = toFlatRows(reporte.adds());
-        return jasperReportService.toPdf(
+        return jasperReportService.toPdfCompiled(
                 REPORT_TEMPLATE,
                 flatData,
                 params
