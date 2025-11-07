@@ -19,11 +19,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +34,10 @@ class BuyAddsReportCaseTest {
     private static final LocalDateTime TO = LocalDateTime.of(2024, 1, 15, 23, 59);
     private static final LocalDate PERIOD_FROM = LocalDate.of(2024, 1, 1);
     private static final LocalDate PERIOD_TO = LocalDate.of(2024, 1, 31);
+    private static final LocalDateTime PAID_AT = LocalDateTime.of(2024, 1, 12, 14, 30);
+    private static final LocalDateTime EXPIRATION = LocalDateTime.of(2024, 2, 12, 0, 0);
+    private static final LocalDateTime CREATED_AT = LocalDateTime.of(2023, 12, 31, 8, 0);
+    private static final LocalDateTime UPDATED_AT = LocalDateTime.of(2024, 1, 5, 9, 0);
 
     @Mock
     private FindPurchasedAdds findPurchasedAdds;
@@ -77,12 +81,18 @@ class BuyAddsReportCaseTest {
 
         ArgumentCaptor<String> templateCaptor = ArgumentCaptor.forClass(String.class);
         @SuppressWarnings("unchecked")
-        ArgumentCaptor<List<Add>> dataCaptor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List<Map<String, Object>>> dataCaptor = ArgumentCaptor.forClass(List.class);
         ArgumentCaptor<HashMap<String, Object>> paramsCaptor = ArgumentCaptor.forClass(HashMap.class);
         verify(jasperReportService).toPdf(templateCaptor.capture(), dataCaptor.capture(), paramsCaptor.capture());
 
         assertThat(templateCaptor.getValue()).isEqualTo("ads_purchased_report");
-        assertThat(dataCaptor.getValue()).isSameAs(rawAdds);
+        var rows = dataCaptor.getValue();
+        assertThat(rows).hasSize(1);
+        var row = rows.getFirst();
+        assertThat(row.get("type")).isEqualTo("MEDIA_VERTICAL");
+        assertThat(row.get("price")).isEqualTo(BigDecimal.TEN);
+        assertThat(row.get("content")).isEqualTo("content");
+        assertThat(row.get("paidAt")).isEqualTo("12-01-2024 14:30");
         var params = paramsCaptor.getValue();
         assertThat(params.get("reportTitle")).isEqualTo("Anuncios Comprados");
         assertThat(params.get("from")).isEqualTo(FROM);
@@ -105,11 +115,11 @@ class BuyAddsReportCaseTest {
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 PaymentState.COMPLETED,
-                LocalDateTime.now(),
+                PAID_AT,
                 BigDecimal.TEN,
-                LocalDateTime.now().plusDays(10),
-                LocalDateTime.now().minusDays(5),
-                LocalDateTime.now().minusDays(2)
+                EXPIRATION,
+                CREATED_AT,
+                UPDATED_AT
         );
     }
 }

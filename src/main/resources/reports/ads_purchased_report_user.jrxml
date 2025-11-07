@@ -8,23 +8,17 @@
     <!-- ====== Parameters ====== -->
     <parameter name="from" class="java.time.LocalDateTime"/>
     <parameter name="to" class="java.time.LocalDateTime"/>
-    <parameter name="firstUserName" class="java.lang.String"/>
+    <parameter name="userFullName" class="java.lang.String"/>
     <parameter name="userId" class="java.util.UUID"/>
 
-    <!-- ====== Fields (desde Add) ====== -->
-    <field name="id" class="java.util.UUID"/>
-    <field name="type" class="com.sap.adds_service.adds.domain.AddType"/>
+    <!-- ====== Fields (datos planos) ====== -->
+    <field name="id" class="java.lang.String"/>
+    <field name="type" class="java.lang.String"/>
     <field name="price" class="java.math.BigDecimal"/>
-    <field name="paidAt" class="java.time.LocalDateTime"/>
-    <field name="addExpiration" class="java.time.LocalDateTime"/>
+    <field name="paidAt" class="java.lang.String"/>
+    <field name="addExpiration" class="java.lang.String"/>
     <!-- Solo usuario -->
     <field name="userFullName" class="java.lang.String"/>
-
-    <!-- ====== Variables ====== -->
-    <variable name="firstUserName" class="java.lang.String" calculation="Nothing" resetType="Report">
-        <initialValueExpression><![CDATA[""]]></initialValueExpression>
-        <expression><![CDATA[$P{firstUserName}]]></expression>
-    </variable>
     <variable name="totalEarnings" class="java.math.BigDecimal" calculation="Sum">
         <expression><![CDATA[$F{price}]]></expression>
         <initialValueExpression><![CDATA[new java.math.BigDecimal("0")]]></initialValueExpression>
@@ -41,8 +35,8 @@
             ]]></expression>
         </element>
         <element kind="textField" uuid="7b9d4a74-1c47-4d02-8b5a-3a4c1a1d0b7f" x="0" y="65" width="515" height="15" fontSize="9.0" italic="true" hTextAlign="Center">
-            <printWhenExpression><![CDATA[$P{firstUserName} != null && !$P{firstUserName}.isEmpty()]]></printWhenExpression>
-            <expression><![CDATA["Usuario: " + $P{firstUserName}]]></expression>
+            <printWhenExpression><![CDATA[$P{userFullName} != null && !$P{userFullName}.isEmpty()]]></printWhenExpression>
+            <expression><![CDATA["Usuario: " + $P{userFullName}]]></expression>
         </element>
     </title>
 
@@ -69,7 +63,7 @@
     <detail>
         <band height="23">
             <element kind="textField" uuid="aabbccdd-eeff-0011-2233-445566778899" x="0" y="0" width="90" height="15" fontSize="8.0" textAdjust="ScaleFont" hTextAlign="Center" vTextAlign="Middle">
-                <expression><![CDATA[$F{type}.toString()]]></expression>
+                <expression><![CDATA[$F{type}]]></expression>
             </element>
             <element kind="textField" uuid="bbccddee-ff00-1122-3344-5566778899aa" x="90" y="0" width="170" height="15" fontSize="8.0" textAdjust="ScaleFont" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
                 <expression><![CDATA[
@@ -80,16 +74,10 @@ $F{userFullName} == null ? "" : $F{userFullName}
                 <expression><![CDATA[$F{price}]]></expression>
             </element>
             <element kind="textField" uuid="ddeeff00-1122-3344-5566-778899aabbcc" x="340" y="0" width="90" height="15" fontSize="8.0" textAdjust="ScaleFont" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-                <expression><![CDATA[
-                    $F{paidAt} == null ? "" :
-                    $F{paidAt}.format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))
-                ]]></expression>
+                <expression><![CDATA[$F{paidAt}]]></expression>
             </element>
             <element kind="textField" uuid="eeff0011-2233-4455-6677-8899aabbccdd" x="430" y="0" width="85" height="15" fontSize="8.0" textAdjust="ScaleFont" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
-                <expression><![CDATA[
-                    $F{addExpiration} == null ? "" :
-                    $F{addExpiration}.format(java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"))
-                ]]></expression>
+                <expression><![CDATA[$F{addExpiration}]]></expression>
             </element>
         </band>
     </detail>

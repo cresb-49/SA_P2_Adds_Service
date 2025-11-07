@@ -14,7 +14,10 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -22,6 +25,7 @@ import java.util.UUID;
 public class ReporteGananciasAnuncianteCase implements ReporteGananciasAnuncianteCasePort {
 
     private static final String REPORT_TEMPLATE = "ads_purchased_report_user";
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     private final AddFactory addFactory;
     private final JasperReportServicePort jasperReportService;
@@ -66,14 +70,39 @@ public class ReporteGananciasAnuncianteCase implements ReporteGananciasAnunciant
         params.put("from", from.atStartOfDay());
         params.put("to", to.atTime(23, 59, 59));
         if (userId != null && !reporte.adds().isEmpty()) {
-            var firstAdd = reporte.adds().getFirst();
-            params.put("userId", firstAdd.getId());
-            params.put("userFullName", firstAdd.getUserFullName());
+            params.put("userId", userId);
+            params.put("userFullName", reporte.adds().getFirst().getUserFullName());
         }
+        var flatData = toFlatRows(reporte.adds());
         return jasperReportService.toPdf(
                 REPORT_TEMPLATE,
-                reporte.adds(),
+                flatData,
                 params
         );
+    }
+
+    private List<Map<String, Object>> toFlatRows(List<AddGananciasAnuncianteReportLineDTO> adds) {
+        return adds.stream()
+                .map(this::toFlatRow)
+                .toList();
+    }
+
+    private Map<String, Object> toFlatRow(AddGananciasAnuncianteReportLineDTO add) {
+        var row = new HashMap<String, Object>();
+        row.put("id", add.getId() == null ? "" : add.getId().toString());
+        row.put("type", add.getType() == null ? "" : add.getType().name());
+        row.put("paidAt", formatDate(add.getPaidAt()));
+        row.put("price", add.getPrice());
+        row.put("addExpiration", formatDate(add.getAddExpiration()));
+        row.put("userFullName", safeString(add.getUserFullName()));
+        return row;
+    }
+
+    private static String safeString(String value) {
+        return value == null ? "" : value;
+    }
+
+    private static String formatDate(LocalDateTime value) {
+        return value == null ? "" : value.format(DATE_TIME_FORMATTER);
     }
 }

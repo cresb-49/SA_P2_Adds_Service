@@ -6,7 +6,6 @@ import com.sap.adds_service.adds.domain.Add;
 import com.sap.adds_service.adds.domain.AddType;
 import com.sap.adds_service.adds.domain.PaymentState;
 import com.sap.adds_service.adds.domain.dtos.UserView;
-import com.sap.adds_service.adds.domain.dtos.GananciasAnuncianteReportDTO;
 import com.sap.adds_service.common.infrastructure.output.jasper.port.JasperReportServicePort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +26,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -118,8 +116,7 @@ class ReporteGananciasAnuncianteCaseTest {
         assertThat(result).isEqualTo(expectedPdf);
         ArgumentCaptor<String> templateCaptor = ArgumentCaptor.forClass(String.class);
         @SuppressWarnings("unchecked")
-        ArgumentCaptor<List<com.sap.adds_service.adds.domain.dtos.AddGananciasAnuncianteReportLineDTO>> dataCaptor =
-                ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List<Map<String, Object>>> dataCaptor = ArgumentCaptor.forClass(List.class);
         ArgumentCaptor<Map<String, Object>> paramsCaptor = ArgumentCaptor.forClass(Map.class);
 
         verify(jasperReportService).toPdf(templateCaptor.capture(), dataCaptor.capture(), paramsCaptor.capture());
@@ -129,12 +126,16 @@ class ReporteGananciasAnuncianteCaseTest {
         var params = paramsCaptor.getValue();
         assertThat(params.get("from")).isEqualTo(FROM.atStartOfDay());
         assertThat(params.get("to")).isEqualTo(TO.atTime(23, 59, 59));
-        assertThat(params.get("userId")).isEqualTo(firstAdd.getId());
+        assertThat(params.get("userId")).isEqualTo(USER_ID);
         assertThat(params.get("userFullName")).isEqualTo("Jane Doe");
 
         var lines = dataCaptor.getValue();
         assertThat(lines).hasSize(2);
-        assertThat(lines.getFirst().getId()).isEqualTo(firstAdd.getId());
+        var firstRow = lines.getFirst();
+        assertThat(firstRow.get("id")).isEqualTo(firstAdd.getId().toString());
+        assertThat(firstRow.get("type")).isEqualTo("MEDIA_VERTICAL");
+        assertThat(firstRow.get("userFullName")).isEqualTo("Jane Doe");
+        assertThat(firstRow.get("paidAt")).isEqualTo("10-01-2024 10:00");
     }
 
     private Add buildAdd(UUID id, UUID cinemaId, UUID userId, BigDecimal price, LocalDateTime paidAt) {

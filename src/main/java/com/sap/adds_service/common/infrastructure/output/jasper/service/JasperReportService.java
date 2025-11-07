@@ -6,7 +6,7 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -26,23 +26,27 @@ public class JasperReportService implements JasperReportServicePort {
             try (var in = getClass().getResourceAsStream("/reports/" + t + ".jrxml")) {
                 return JasperCompileManager.compileReport(in);
             } catch (Exception e) {
-                throw new IllegalStateException("No se pudo compilar " + t, e);
+                throw new IllegalStateException("No se pudo compilar " + t + ",message: " + e.getMessage(), e);
             }
         });
     }
 
     @Override
-    public byte[] toPdf(String template, Collection<?> data, Map<String, Object> params) {
+    public byte[] toPdf(String template, Collection<? extends Map<String, ?>> data, Map<String, Object> params) {
         try {
             var jr = load(template);
-            var ds = new JRBeanCollectionDataSource(data == null ? List.of() : data);
+            var normalized = (data == null ? List.<Map<String, ?>>of() : data)
+                    .stream()
+                    .map(entry -> entry == null ? Map.<String, Object>of() : entry)
+                    .toList();
+            var ds = new JRMapCollectionDataSource(normalized);
             var jp = JasperFillManager.fillReport(jr, params, ds);
             try (var out = new ByteArrayOutputStream()) {
                 JasperExportManager.exportReportToPdfStream(jp, out);
                 return out.toByteArray();
             }
         } catch (Exception e) {
-            throw new RuntimeException("Error generando PDF", e);
+            throw new RuntimeException("Error generando PDF, message: " + e.getMessage(), e);
         }
     }
 }

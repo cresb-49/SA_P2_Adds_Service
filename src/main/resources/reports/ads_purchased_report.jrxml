@@ -1,22 +1,24 @@
 <jasperReport name="ads_purchased_report" language="java" pageWidth="595" pageHeight="842" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="40" bottomMargin="40" uuid="b10b7c8f-712a-4f35-9b2f-8dbf4af56e62">
 	<parameter name="from" class="java.time.LocalDateTime"/>
 	<parameter name="to" class="java.time.LocalDateTime"/>
-	<parameter name="addType" class="com.sap.adds_service.adds.domain.AddType"/>
+	<parameter name="addType" class="java.lang.String"/>
 	<parameter name="periodFrom" class="java.time.LocalDate"/>
 	<parameter name="periodTo" class="java.time.LocalDate"/>
 	<parameter name="reportTitle" class="java.lang.String"/>
-	<field name="id" class="java.util.UUID"/>
-	<field name="type" class="com.sap.adds_service.adds.domain.AddType"/>
+	<field name="id" class="java.lang.String"/>
+	<field name="type" class="java.lang.String"/>
 	<field name="price" class="java.math.BigDecimal"/>
-	<field name="paidAt" class="java.time.LocalDateTime"/>
-	<field name="addExpiration" class="java.time.LocalDateTime"/>
+	<field name="paidAt" class="java.lang.String"/>
+	<field name="addExpiration" class="java.lang.String"/>
 	<field name="content" class="java.lang.String"/>
 	<field name="description" class="java.lang.String"/>
 	<field name="cinemaName" class="java.lang.String"/>
 	<field name="userFullName" class="java.lang.String"/>
 	<title height="95">
-		<element kind="staticText" uuid="ee56df62-7fa6-4a8d-a080-4a4c04ea6d60" x="0" y="10" width="515" height="20" fontSize="16.0" bold="true" hTextAlign="Center">
-			<text><![CDATA[Anuncios Comprados]]></text>
+		<element kind="textField" uuid="ee56df62-7fa6-4a8d-a080-4a4c04ea6d60" x="0" y="10" width="515" height="20" fontSize="16.0" bold="true" hTextAlign="Center">
+			<expression><![CDATA[
+$P{reportTitle} == null || $P{reportTitle}.isBlank() ? "Anuncios Comprados" : $P{reportTitle}
+]]></expression>
 		</element>
 		<element kind="textField" uuid="b386c8f6-79ef-4c6d-bdfe-0c80ec36b209" x="0" y="35" width="515" height="15" fontSize="10.0" italic="true" hTextAlign="Center">
 			<expression><![CDATA["Compras del " + $P{from}.toLocalDate().toString() + " al " + $P{to}.toLocalDate().toString()]]></expression>
@@ -25,7 +27,7 @@
 			<expression><![CDATA["Periodo activo: " + $P{periodFrom}.toString() + " a " + $P{periodTo}.toString()]]></expression>
 		</element>
 		<element kind="textField" uuid="eac6ac27-ad83-4a28-9001-1ec60756185f" x="0" y="65" width="515" height="15" fontSize="9.0" italic="true" hTextAlign="Center">
-			<expression><![CDATA["Tipo de anuncio: " + ($P{addType} == null ? "Todos" : $P{addType}.toString())]]></expression>
+			<expression><![CDATA["Tipo de anuncio: " + ($P{addType} == null || $P{addType}.isBlank() ? "Todos" : $P{addType})]]></expression>
 		</element>
 	</title>
 	<columnHeader height="20">
@@ -52,7 +54,7 @@
 	<detail>
 		<band height="23">
 			<element kind="textField" uuid="ddfbad2e-1cff-49e2-ba3b-c4d6554be487" x="0" y="0" width="60" height="15" fontSize="8.0" textAdjust="ScaleFont" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{type}.toString()]]></expression>
+				<expression><![CDATA[$F{type}]]></expression>
 			</element>
 			<element kind="textField" uuid="9cf88189-dccc-48c4-bcca-aa21283e9c7d" x="60" y="0" width="100" height="15" fontSize="8.0" textAdjust="ScaleFont" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA[$F{userFullName}]]></expression>
@@ -63,11 +65,11 @@
 			<element kind="textField" uuid="e8649c94-8788-4531-95ab-d6d18bc1ed0f" x="260" y="0" width="60" height="15" fontSize="8.0" hTextAlign="Center" vTextAlign="Middle">
 				<expression><![CDATA[$F{price}]]></expression>
 			</element>
-			<element kind="textField" uuid="f383c521-c06a-40d6-b320-44a9988208c8" x="320" y="0" width="90" height="15" fontSize="8.0" textAdjust="ScaleFont" blankWhenNull="false" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{paidAt}.format( java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:m") )]]></expression>
+			<element kind="textField" uuid="f383c521-c06a-40d6-b320-44a9988208c8" x="320" y="0" width="90" height="15" fontSize="8.0" textAdjust="ScaleFont" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{paidAt}]]></expression>
 			</element>
-			<element kind="textField" uuid="2aa7b3e0-14d1-43d7-b9bb-3cdd660df2c6" x="410" y="0" width="90" height="15" fontSize="8.0" textAdjust="ScaleFont" pattern="d/M/yy h:mm a" hTextAlign="Center" vTextAlign="Middle">
-				<expression><![CDATA[$F{addExpiration}.format( java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy HH:m") )]]></expression>
+			<element kind="textField" uuid="2aa7b3e0-14d1-43d7-b9bb-3cdd660df2c6" x="410" y="0" width="90" height="15" fontSize="8.0" textAdjust="ScaleFont" blankWhenNull="true" hTextAlign="Center" vTextAlign="Middle">
+				<expression><![CDATA[$F{addExpiration}]]></expression>
 			</element>
 		</band>
 	</detail>

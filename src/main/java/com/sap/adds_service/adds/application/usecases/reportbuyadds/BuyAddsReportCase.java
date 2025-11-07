@@ -12,8 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -22,6 +24,7 @@ public class BuyAddsReportCase implements BuyAddsReportCasePort {
 
     private static final String REPORT_TITLE = "Anuncios Comprados";
     private static final String REPORT_TEMPLATE = "ads_purchased_report";
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
     private final FindPurchasedAdds findPurchasedAdds;
     private final JasperReportServicePort jasperReportService;
@@ -62,6 +65,35 @@ public class BuyAddsReportCase implements BuyAddsReportCasePort {
         params.put("addType", addType);
         params.put("periodFrom", periodFrom);
         params.put("periodTo", periodTo);
-        return jasperReportService.toPdf(REPORT_TEMPLATE, data, params);
+        var flatData = toFlatRows(data);
+        return jasperReportService.toPdf(REPORT_TEMPLATE, flatData, params);
+    }
+
+    private List<Map<String, Object>> toFlatRows(List<Add> adds) {
+        return adds.stream()
+                .map(this::toFlatRow)
+                .toList();
+    }
+
+    private Map<String, Object> toFlatRow(Add add) {
+        var row = new HashMap<String, Object>();
+        row.put("id", add.getId() == null ? "" : add.getId().toString());
+        row.put("type", add.getType() == null ? "" : add.getType().name());
+        row.put("price", add.getPrice());
+        row.put("paidAt", formatDate(add.getPaidAt()));
+        row.put("addExpiration", formatDate(add.getAddExpiration()));
+        row.put("content", safeString(add.getContent()));
+        row.put("description", safeString(add.getDescription()));
+        row.put("cinemaName", safeString(add.getCinemaName()));
+        row.put("userFullName", safeString(add.getUserFullName()));
+        return row;
+    }
+
+    private static String safeString(String value) {
+        return value == null ? "" : value;
+    }
+
+    private static String formatDate(LocalDateTime value) {
+        return value == null ? "" : value.format(DATE_TIME_FORMATTER);
     }
 }
