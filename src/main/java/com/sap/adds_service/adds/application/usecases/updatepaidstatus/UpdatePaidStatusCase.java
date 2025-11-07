@@ -34,7 +34,7 @@ public class UpdatePaidStatusCase implements UpdatePaidStatusCasePort {
                 add.markAsFailed();
                 message = "Su anuncio tubo un error de pago!!!, ID: " + add.getId() + ", " + changePaidStateAddDTO.message();
             }
-            sendNotificationPort.sendNotification(add.getId(), message);
+            sendNotificationPort.sendNotification(add.getUserId(), message);
             //Save the add
             saveAddPort.save(add);
         } catch (IllegalStateException e) {
